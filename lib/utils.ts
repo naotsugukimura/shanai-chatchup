@@ -111,6 +111,41 @@ export function getStatusLabel(status: string): string {
     confirmed: "確認済み",
     unconfirmed: "未確認",
     research_needed: "要調査",
+    active: "進行中",
+    upcoming: "予定",
+    monitoring: "監視中",
+    resolved: "解決済み",
   }
   return labels[status] ?? status
+}
+
+export function getImpactDotColor(
+  level: ImpactLevel | "none" | undefined
+): string {
+  switch (level) {
+    case "high":
+      return "bg-impact-high"
+    case "medium":
+      return "bg-impact-medium"
+    case "low":
+      return "bg-impact-low"
+    default:
+      return ""
+  }
+}
+
+export function createIdMap<T extends { id: string }>(
+  items: T[]
+): Record<string, T> {
+  const map: Record<string, T> = {}
+  for (const item of items) map[item.id] = item
+  return map
+}
+
+export function createNumericIdMap<T extends { id: number }>(
+  items: T[]
+): Record<number, T> {
+  const map: Record<number, T> = {}
+  for (const item of items) map[item.id] = item
+  return map
 }

@@ -5,33 +5,17 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import type { Entity, LayerDefinition, ImpactLevel } from "@/lib/types"
-import { getImpactIcon } from "@/lib/utils"
+import type { Entity, LayerDefinition } from "@/lib/types"
+import { BUSINESS_AREA_ENTRIES } from "@/lib/constants"
+import { getImpactIcon, getImpactDotColor } from "@/lib/utils"
 
 interface ImpactMatrixProps {
   entities: Entity[]
   layers: LayerDefinition[]
 }
 
-function getImpactDotColor(level: ImpactLevel | "none" | undefined): string {
-  switch (level) {
-    case "high":
-      return "bg-impact-high"
-    case "medium":
-      return "bg-impact-medium"
-    case "low":
-      return "bg-impact-low"
-    default:
-      return ""
-  }
-}
-
 export function ImpactMatrix({ entities, layers }: ImpactMatrixProps) {
-  const businesses = [
-    { key: "recruitment" as const, label: "人材紹介" },
-    { key: "media" as const, label: "メディア" },
-    { key: "saas" as const, label: "SaaS" },
-  ]
+  const businesses = BUSINESS_AREA_ENTRIES
 
   return (
     <div>

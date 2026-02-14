@@ -13,10 +13,16 @@ import { EntityCard } from "./EntityCard"
 import { EntityTable } from "./EntityTable"
 import { ImpactMatrix } from "./ImpactMatrix"
 import { TriggerCard } from "./TriggerCard"
+import { NewsTimeline } from "./NewsTimeline"
+import { SupplyChainTree } from "./SupplyChainTree"
+import { RiskScenarioPanel } from "./RiskScenarioPanel"
 import { LayerBadge } from "./LayerBadge"
 import type {
   Entity,
   LayerDefinition,
+  NewsItem,
+  SupplyChainData,
+  RiskScenario,
   DashboardState,
   DashboardAction,
   ViewMode,
@@ -25,6 +31,7 @@ import type {
 import type { Trigger } from "@/lib/trigger-types"
 import { TRIGGER_CATEGORIES } from "@/lib/trigger-types"
 import { filterEntities, sortEntities, computeStats } from "@/lib/filters"
+import { createNumericIdMap } from "@/lib/utils"
 
 const initialState: DashboardState = {
   filters: {
@@ -114,9 +121,12 @@ interface DashboardClientProps {
   entities: Entity[]
   layers: LayerDefinition[]
   triggers: Trigger[]
+  news: NewsItem[]
+  supplyChainData: SupplyChainData
+  riskScenarios: RiskScenario[]
 }
 
-export function DashboardClient({ entities, layers, triggers }: DashboardClientProps) {
+export function DashboardClient({ entities, layers, triggers, news, supplyChainData, riskScenarios }: DashboardClientProps) {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [expandedTriggers, setExpandedTriggers] = useState<string[]>([])
   const [triggerSearch, setTriggerSearch] = useState("")
@@ -131,11 +141,7 @@ export function DashboardClient({ entities, layers, triggers }: DashboardClientP
     [filteredEntities, entities]
   )
 
-  const layerMap = useMemo(() => {
-    const map: Record<number, LayerDefinition> = {}
-    for (const l of layers) map[l.id] = l
-    return map
-  }, [layers])
+  const layerMap = useMemo(() => createNumericIdMap(layers), [layers])
 
   const filteredTriggers = useMemo(() => {
     if (!triggerSearch) return triggers
@@ -177,13 +183,22 @@ export function DashboardClient({ entities, layers, triggers }: DashboardClientP
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-4">
-      <Tabs defaultValue="entities">
+      <Tabs defaultValue="news">
         <TabsList className="mb-4">
-          <TabsTrigger value="entities" className="text-sm">
-            エンティティ ({entities.length})
+          <TabsTrigger value="news" className="text-sm">
+            ニュース ({news.length})
+          </TabsTrigger>
+          <TabsTrigger value="supply-chain" className="text-sm">
+            影響連鎖
+          </TabsTrigger>
+          <TabsTrigger value="risk" className="text-sm">
+            リスクシナリオ ({riskScenarios.length})
           </TabsTrigger>
           <TabsTrigger value="triggers" className="text-sm">
             トリガー/テーマ ({triggers.length})
+          </TabsTrigger>
+          <TabsTrigger value="entities" className="text-sm">
+            エンティティ ({entities.length})
           </TabsTrigger>
         </TabsList>
 
@@ -423,6 +438,25 @@ export function DashboardClient({ entities, layers, triggers }: DashboardClientP
               </div>
             )}
           </div>
+        </TabsContent>
+
+        <TabsContent value="news">
+          <NewsTimeline news={news} entities={entities} />
+        </TabsContent>
+
+        <TabsContent value="supply-chain">
+          <SupplyChainTree
+            supplyChainData={supplyChainData}
+            entities={entities}
+            layers={layers}
+          />
+        </TabsContent>
+
+        <TabsContent value="risk">
+          <RiskScenarioPanel
+            scenarios={riskScenarios}
+            entities={entities}
+          />
         </TabsContent>
       </Tabs>
     </div>

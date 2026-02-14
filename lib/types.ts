@@ -77,6 +77,80 @@ export type DashboardAction =
   | { type: "TOGGLE_EXPAND"; entityId: string }
   | { type: "CLEAR_FILTERS" };
 
+export interface NewsItem {
+  id: string;
+  title: string;
+  date: string;
+  source: string;
+  url: string;
+  relatedEntityIds: string[];
+  category: "product" | "partnership" | "funding" | "policy" | "market" | "technology";
+  summary: string;
+}
+
+export interface SupplyChainNode {
+  entityId: string;
+  level: number;
+  role: string;
+  children: string[];
+  influenceType: "regulation" | "market" | "technology" | "competition";
+  influenceDescription: string;
+}
+
+export interface ConnectionReason {
+  from: string;
+  to: string;
+  reason: string;
+}
+
+export interface SupplyChain {
+  id: string;
+  title: string;
+  description: string;
+  overview: string;
+  nodes: SupplyChainNode[];
+  connectionReasons: ConnectionReason[];
+}
+
+export interface SupplyChainData {
+  chains: SupplyChain[];
+}
+
+// Risk Scenario types (3172-style)
+export type RiskSeverity = "critical" | "high" | "medium" | "low";
+export type RiskCategory = "policy" | "competition" | "technology" | "market" | "natural_disaster" | "regulation";
+export type RiskStatus = "active" | "monitoring" | "mitigated" | "hypothetical";
+
+export interface RiskImpactKPI {
+  label: string;
+  value: string;
+  unit: string;
+}
+
+export interface AffectedSupplyLine {
+  entityId: string;
+  riskType: string;
+  severity: RiskSeverity;
+  detail: string;
+}
+
+export interface RiskScenario {
+  id: string;
+  title: string;
+  severity: RiskSeverity;
+  category: RiskCategory;
+  status: RiskStatus;
+  date: string;
+  summary: string;
+  detail: string;
+  impactKPIs: RiskImpactKPI[];
+  affectedSupplyLines: AffectedSupplyLine[];
+  affectedBusinesses: (BusinessArea | "all")[];
+  relatedEntityIds: string[];
+  mitigationActions: string[];
+  isPreset: boolean;
+}
+
 export interface DashboardState {
   filters: FilterState;
   viewMode: ViewMode;

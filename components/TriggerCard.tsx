@@ -9,6 +9,8 @@ import { ImpactBadge } from "./ImpactBadge"
 import { BusinessTag } from "./BusinessTag"
 import type { Trigger } from "@/lib/trigger-types"
 import { TRIGGER_CATEGORIES } from "@/lib/trigger-types"
+import { TRIGGER_STATUS_MAP } from "@/lib/constants"
+import { getStatusLabel } from "@/lib/utils"
 
 interface TriggerCardProps {
   trigger: Trigger
@@ -16,24 +18,8 @@ interface TriggerCardProps {
   onToggleExpand: () => void
 }
 
-function getStatusLabel(status: string): string {
-  const labels: Record<string, string> = {
-    active: "進行中",
-    upcoming: "予定",
-    monitoring: "監視中",
-    resolved: "解決済み",
-  }
-  return labels[status] ?? status
-}
-
 function getStatusColor(status: string): string {
-  const colors: Record<string, string> = {
-    active: "bg-red-500 text-white",
-    upcoming: "bg-amber-500 text-white",
-    monitoring: "bg-blue-500 text-white",
-    resolved: "bg-gray-400 text-white",
-  }
-  return colors[status] ?? "bg-gray-400 text-white"
+  return TRIGGER_STATUS_MAP[status]?.color ?? "bg-gray-400 text-white"
 }
 
 export function TriggerCard({

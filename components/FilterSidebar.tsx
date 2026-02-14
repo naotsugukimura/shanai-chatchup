@@ -5,12 +5,11 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import type {
   Entity,
-  ImpactLevel,
-  BusinessArea,
   LayerDefinition,
   DashboardAction,
   FilterState,
 } from "@/lib/types"
+import { BUSINESS_AREAS, IMPACT_LEVELS } from "@/lib/constants"
 import { getUniqueSubCategories } from "@/lib/filters"
 import { getBusinessLabel, getImpactLabel } from "@/lib/utils"
 
@@ -35,8 +34,8 @@ export function FilterSidebar({
     filters.businesses.length +
     (filters.searchText ? 1 : 0)
 
-  const impactLevels: ImpactLevel[] = ["high", "medium", "low"]
-  const businesses: BusinessArea[] = ["recruitment", "media", "saas"]
+  const impactLevels = IMPACT_LEVELS
+  const businesses = BUSINESS_AREAS
 
   return (
     <div className="space-y-4">

@@ -1,0 +1,182 @@
+[
+  {
+    "id": "N-001",
+    "title": "LITALICO、就労支援SaaS「knowbe」を大幅刷新 AIマッチング機能を搭載",
+    "date": "2026-01-28",
+    "source": "日経クロステック",
+    "url": "https://example.com/news/litalico-knowbe-ai",
+    "relatedEntityIds": ["L2-001", "L3C-001"],
+    "category": "product",
+    "summary": "LITALICOがSaaS型就労支援記録システム「knowbe」に生成AIを活用したマッチング機能を追加。利用者の特性から最適な企業・職種を提案"
+  },
+  {
+    "id": "N-002",
+    "title": "厚労省、2027年度報酬改定に向け検討会を設置 就労支援の成果主義強化へ",
+    "date": "2026-02-05",
+    "source": "福祉新聞",
+    "url": "https://example.com/news/mhlw-2027-reform",
+    "relatedEntityIds": ["L1-001"],
+    "category": "policy",
+    "summary": "厚生労働省が2027年度障害福祉サービス報酬改定に向けた検討会を設置。就労支援における成果指標の見直しと処遇改善加算の一本化が議論の焦点"
+  },
+  {
+    "id": "N-003",
+    "title": "ウェルビー、九州エリアに10拠点新設 就労移行支援を強化",
+    "date": "2026-01-15",
+    "source": "時事通信",
+    "url": "https://example.com/news/welbe-kyushu",
+    "relatedEntityIds": ["L2-002"],
+    "category": "market",
+    "summary": "ウェルビーが2026年度中に九州エリアで就労移行支援事業所10拠点の新設を発表。地方展開を加速し、全国200拠点超えを目指す"
+  },
+  {
+    "id": "N-004",
+    "title": "パーソルチャレンジ、dodaチャレンジにAIカウンセリング機能を導入",
+    "date": "2026-02-01",
+    "source": "HR Tech Media",
+    "url": "https://example.com/news/persol-ai-counseling",
+    "relatedEntityIds": ["L3A-002", "L5-003"],
+    "category": "technology",
+    "summary": "パーソルチャレンジがdodaチャレンジにAIカウンセリング機能を追加。障害種別に応じた面接対策や履歴書作成支援をAIで自動化"
+  },
+  {
+    "id": "N-005",
+    "title": "法定雇用率2.7%への引き上げ（2026年7月）を前に企業の障害者採用が急増",
+    "date": "2026-01-20",
+    "source": "日経新聞",
+    "url": "https://example.com/news/employment-rate-27",
+    "relatedEntityIds": ["L1-002"],
+    "category": "policy",
+    "summary": "2026年7月の法定雇用率2.7%引き上げを前に、企業の障害者採用意欲が前年比30%増加。人材紹介事業者への求人依頼が急増"
+  },
+  {
+    "id": "N-006",
+    "title": "NDソフトウェア、「ほのぼのmore」に障害福祉向け新モジュールを追加",
+    "date": "2026-01-10",
+    "source": "介護ニュース",
+    "url": "https://example.com/news/ndsoft-module",
+    "relatedEntityIds": ["L3C-003"],
+    "category": "product",
+    "summary": "NDソフトウェアが介護ソフト「ほのぼのmore」に障害福祉サービス対応の請求・記録モジュールを追加。介護施設が障害福祉にも参入しやすい環境を整備"
+  },
+  {
+    "id": "N-007",
+    "title": "LayerX、バクラクの福祉法人向けプラン開始 経理DXを推進",
+    "date": "2026-02-10",
+    "source": "TechCrunch Japan",
+    "url": "https://example.com/news/layerx-welfare",
+    "relatedEntityIds": ["L5-001"],
+    "category": "product",
+    "summary": "LayerXがバクラクシリーズに福祉法人向け特化プランを追加。請求書処理・経費精算のAI-OCR機能を法人の会計実務に最適化"
+  },
+  {
+    "id": "N-008",
+    "title": "ゼネラルパートナーズ、atGPのサテライトオフィス事業を拡大",
+    "date": "2025-12-20",
+    "source": "産経新聞",
+    "url": "https://example.com/news/atgp-satellite",
+    "relatedEntityIds": ["L3A-001"],
+    "category": "market",
+    "summary": "ゼネラルパートナーズがatGPブランドでサテライトオフィス型の障害者雇用支援サービスを拡大。企業のリモートワーク需要に対応"
+  },
+  {
+    "id": "N-009",
+    "title": "freee、障害福祉事業所向け会計連携APIを公開",
+    "date": "2026-01-25",
+    "source": "ITmedia",
+    "url": "https://example.com/news/freee-welfare-api",
+    "relatedEntityIds": ["L5-004"],
+    "category": "technology",
+    "summary": "freeeが障害福祉事業所の会計処理に特化したAPI連携を開始。国保連請求データと自動連携し、入金消込の自動化を実現"
+  },
+  {
+    "id": "N-010",
+    "title": "ココルポート、東北地方に初進出 仙台に3拠点開設",
+    "date": "2026-02-08",
+    "source": "河北新報",
+    "url": "https://example.com/news/cocorport-tohoku",
+    "relatedEntityIds": ["L2-003"],
+    "category": "market",
+    "summary": "ココルポートが東北地方に初進出し、仙台市内に3拠点を同時開設。関東中心だった事業エリアを全国に拡大"
+  },
+  {
+    "id": "N-011",
+    "title": "Lean on Me、Special LearningにVR研修コンテンツを追加",
+    "date": "2026-01-30",
+    "source": "EdTechZine",
+    "url": "https://example.com/news/leanonme-vr",
+    "relatedEntityIds": ["L4-001"],
+    "category": "product",
+    "summary": "Lean on Meが障害福祉従事者向けeラーニング「Special Learning」にVR研修コンテンツを追加。利用者対応のシミュレーション訓練が可能に"
+  },
+  {
+    "id": "N-012",
+    "title": "デジタル庁、障害福祉分野のデータ標準化ロードマップを公表",
+    "date": "2026-02-12",
+    "source": "官庁速報",
+    "url": "https://example.com/news/digital-agency-roadmap",
+    "relatedEntityIds": ["L1-005", "L1-003"],
+    "category": "policy",
+    "summary": "デジタル庁が障害福祉分野のデータ標準化に向けたロードマップを公表。2028年度までにAPIベースの情報連携基盤を構築する方針"
+  },
+  {
+    "id": "N-013",
+    "title": "リクルート、障害者向け求人メディアの立ち上げを検討",
+    "date": "2026-02-03",
+    "source": "週刊東洋経済",
+    "url": "https://example.com/news/recruit-disability-media",
+    "relatedEntityIds": ["L5-002"],
+    "category": "market",
+    "summary": "リクルートが障害者向け専門求人メディアの新設を検討していることが判明。既存のリクナビ・Indeedとの連携で大規模な求人プラットフォームを目指す"
+  },
+  {
+    "id": "N-014",
+    "title": "HUGシステムズ、記録AIアシスタント機能をリリース",
+    "date": "2026-01-18",
+    "source": "ICT教育ニュース",
+    "url": "https://example.com/news/hug-ai-assistant",
+    "relatedEntityIds": ["L3C-002"],
+    "category": "product",
+    "summary": "HUGシステムズが放課後等デイサービス向けシステム「HUG」にAIアシスタント機能を追加。支援記録の文章生成を自動化"
+  },
+  {
+    "id": "N-015",
+    "title": "AHCグループ、M&Aで北海道の就労支援事業者を買収",
+    "date": "2025-12-25",
+    "source": "M&A Online",
+    "url": "https://example.com/news/ahc-ma-hokkaido",
+    "relatedEntityIds": ["L2-004"],
+    "category": "funding",
+    "summary": "AHCグループが北海道の就労支援事業者を買収。グループの事業所数が全国150拠点を超え、業界3位の規模に"
+  },
+  {
+    "id": "N-016",
+    "title": "OpenAI、障害者支援向けGPTsテンプレートを提供開始",
+    "date": "2026-02-07",
+    "source": "The Verge",
+    "url": "https://example.com/news/openai-disability-gpts",
+    "relatedEntityIds": ["L5-006"],
+    "category": "technology",
+    "summary": "OpenAIが障害者支援分野向けのGPTsテンプレートを公開。個別支援計画の作成支援や利用者のアセスメント補助に活用可能"
+  },
+  {
+    "id": "N-017",
+    "title": "こども家庭庁、放課後等デイサービスの質の評価指標を策定",
+    "date": "2026-01-22",
+    "source": "教育新聞",
+    "url": "https://example.com/news/cfa-quality-metrics",
+    "relatedEntityIds": ["L1-004"],
+    "category": "policy",
+    "summary": "こども家庭庁が放課後等デイサービスの質の評価に関する新たな指標を策定。客観的な評価基準の導入で事業所の質の底上げを図る"
+  },
+  {
+    "id": "N-018",
+    "title": "デコボコベース、法人向け障害者雇用コンサルティングを開始",
+    "date": "2026-02-11",
+    "source": "PR TIMES",
+    "url": "https://example.com/news/decoboco-consulting",
+    "relatedEntityIds": ["L4-002"],
+    "category": "market",
+    "summary": "デコボコベースが法人向けの障害者雇用コンサルティングサービスを開始。定着支援と人材マッチングの一気通貫サービスを提供"
+  }
+]
