@@ -1,0 +1,1153 @@
+[
+  {
+    "id": "L1-001",
+    "name": "厚生労働省 障害保健福祉部",
+    "nameKana": "こうせいろうどうしょう しょうがいほけんふくしぶ",
+    "layer": 1,
+    "subCategory": null,
+    "summary": "障害福祉サービスの報酬改定（3年周期）、法改正、通知・通達を管轄。就労選択支援等の新制度創設も担当",
+    "impactLevel": "high",
+    "affectedBusiness": ["all"],
+    "impactDetail": {
+      "recruitment": "medium",
+      "media": "medium",
+      "saas": "high"
+    },
+    "monitoringReason": "障害福祉制度の根幹を決定する中央省庁。報酬改定は3年周期で実施され、SaaSの請求ロジック・加算体系に直接影響。就労選択支援など新制度の創設もこの部署が主導する",
+    "monitoringPoints": [
+      "報酬改定（3年周期。次回2027年度予定）の審議動向",
+      "就労選択支援の施行状況とルール変更",
+      "処遇改善加算の見直し動向",
+      "障害者総合支援法の改正議論"
+    ],
+    "recommendedFrequency": "weekly",
+    "sources": [
+      { "name": "社会保障審議会障害者部会", "url": "https://www.mhlw.go.jp/stf/shingi/shingi-hosho_126730.html", "frequency": "月1-2回" },
+      { "name": "障害保健福祉部 通知・事務連絡", "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/shougaishahukushi/index.html", "frequency": "随時" }
+    ],
+    "officialUrl": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/shougaishahukushi/index.html",
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": ["L1-003"],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L1-002",
+    "name": "厚生労働省 職業安定局",
+    "nameKana": "こうせいろうどうしょう しょくぎょうあんていきょく",
+    "layer": 1,
+    "subCategory": null,
+    "summary": "障害者雇用促進法を所管。法定雇用率の引き上げ（2026年7月→2.7%）は人材紹介事業の市場規模に直結",
+    "impactLevel": "high",
+    "affectedBusiness": ["all"],
+    "impactDetail": {
+      "recruitment": "high",
+      "media": "medium",
+      "saas": "low"
+    },
+    "monitoringReason": "障害者雇用促進法を所管し、法定雇用率の設定・除外率の見直しなどを決定。雇用率引き上げは企業の障害者採用需要を直接押し上げ、人材紹介事業の市場規模に直結する",
+    "monitoringPoints": [
+      "法定雇用率の引き上げスケジュール（2026年7月→2.7%予定）",
+      "除外率の段階的廃止の動向",
+      "障害者雇用納付金制度の見直し",
+      "精神障害者の雇用カウント方法の変更"
+    ],
+    "recommendedFrequency": "weekly",
+    "sources": [
+      { "name": "労働政策審議会 障害者雇用分科会", "url": "https://www.mhlw.go.jp/stf/shingi/shingi-rousei_126985.html", "frequency": "月1-2回" },
+      { "name": "ハローワーク 障害者雇用関連", "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/koyou/shougaishakoyou/index.html", "frequency": "随時" }
+    ],
+    "officialUrl": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/koyou/shougaishakoyou/index.html",
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": ["L1-001"],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L1-003",
+    "name": "国保中央会/国保連合会",
+    "nameKana": "こくほちゅうおうかい こくほれんごうかい",
+    "layer": 1,
+    "subCategory": null,
+    "summary": "障害福祉サービスの報酬請求の審査支払い機関。電子請求システムの仕様変更がSaaS事業に直接影響",
+    "impactLevel": "high",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "high"
+    },
+    "monitoringReason": "障害福祉サービスの報酬請求の審査支払いを担う機関。電子請求受付システムのインターフェース仕様はSaaS（かべなしクラウド）の請求機能に直接影響。仕様変更への迅速な対応が不可欠",
+    "monitoringPoints": [
+      "電子請求受付システムの仕様変更通知",
+      "請求様式の変更・追加",
+      "審査ルールの変更",
+      "システムメンテナンス・障害情報"
+    ],
+    "recommendedFrequency": "weekly",
+    "sources": [
+      { "name": "国保中央会 介護・障害者総合支援", "url": "https://www.kokuho.or.jp/", "frequency": "随時" },
+      { "name": "電子請求受付システム", "url": "https://www.e-seikyuu.jp/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://www.kokuho.or.jp/",
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": ["L1-001"],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L1-004",
+    "name": "こども家庭庁",
+    "nameKana": "こどもかていちょう",
+    "layer": 1,
+    "subCategory": null,
+    "summary": "児童発達支援・放課後等デイサービスを所管。障害児支援施策は将来の就労支援利用者の流入経路に影響",
+    "impactLevel": "medium",
+    "affectedBusiness": ["all"],
+    "impactDetail": {
+      "recruitment": "low",
+      "media": "medium",
+      "saas": "medium"
+    },
+    "monitoringReason": "2023年4月に発足し、児童発達支援・放課後等デイサービスを厚労省から移管された。障害児支援施策は将来の就労支援利用者の流入経路であり、中長期的な市場動向の先行指標",
+    "monitoringPoints": [
+      "児童発達支援・放デイの報酬改定動向",
+      "障害児支援の制度設計の方向性",
+      "こども大綱における障害児支援の位置づけ"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "こども家庭庁 障害児支援", "url": "https://www.cfa.go.jp/", "frequency": "月次" }
+    ],
+    "officialUrl": "https://www.cfa.go.jp/",
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L1-005",
+    "name": "デジタル庁",
+    "nameKana": "でじたるちょう",
+    "layer": 1,
+    "subCategory": null,
+    "summary": "マイナンバー連携、行政手続きのデジタル化を推進。福祉分野のDX方針がSaaS事業の技術要件に影響しうる",
+    "impactLevel": "low",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "low"
+    },
+    "monitoringReason": "行政手続きのデジタル化・マイナンバー連携を推進。福祉分野のDX方針（データ標準化・API連携等）はSaaS事業の技術ロードマップに中長期的な影響を与える可能性がある",
+    "monitoringPoints": [
+      "福祉分野のデータ標準化・API連携の動向",
+      "マイナンバーと福祉サービスの連携方針",
+      "自治体システム標準化の進捗"
+    ],
+    "recommendedFrequency": "quarterly",
+    "sources": [
+      { "name": "デジタル庁", "url": "https://www.digital.go.jp/", "frequency": "四半期" }
+    ],
+    "officialUrl": "https://www.digital.go.jp/",
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L2-001",
+    "name": "LITALICO",
+    "nameKana": "りたりこ",
+    "layer": 2,
+    "subCategory": null,
+    "summary": "障害福祉領域最大手の上場企業。就労移行支援・メディア・SaaSの3事業でSMSと全面競合",
+    "impactLevel": "high",
+    "affectedBusiness": ["all"],
+    "impactDetail": {
+      "recruitment": "high",
+      "media": "high",
+      "saas": "high"
+    },
+    "monitoringReason": "障害福祉領域で最も多角的な事業展開をしている上場企業。就労移行支援（LITALICOワークス）、メディア（仕事ナビ・発達ナビ）、SaaS（かんたん請求ソフト）の3領域でSMSと全面的に競合。IR情報から戦略の方向性を読み取れる",
+    "monitoringPoints": [
+      "四半期決算・セグメント別業績（就労支援/プラットフォーム）",
+      "M&A・新規事業の発表",
+      "SaaS事業（かんたん請求ソフト）の機能追加・価格変更",
+      "拠点展開の加速/減速"
+    ],
+    "recommendedFrequency": "weekly",
+    "sources": [
+      { "name": "LITALICO IR", "url": "https://litalico.co.jp/ir/", "frequency": "四半期" },
+      { "name": "適時開示（TDnet）", "url": "https://www.release.tdnet.info/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://litalico.co.jp/",
+    "stockCode": "7366",
+    "operator": null,
+    "relatedEntities": ["L3B-001", "L3B-002", "L3C-006"],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L2-002",
+    "name": "ウェルビー",
+    "nameKana": "うぇるびー",
+    "layer": 2,
+    "subCategory": null,
+    "summary": "就労移行支援事業の大手上場企業。全国展開の拠点数と利用者数がSMSの人材紹介事業の送客元として重要",
+    "impactLevel": "medium",
+    "affectedBusiness": ["recruitment", "media"],
+    "impactDetail": {
+      "recruitment": "medium",
+      "media": "medium",
+      "saas": "none"
+    },
+    "monitoringReason": "就労移行支援の大手上場企業で、ウェルビー・ハビー等のブランドで多拠点展開。拠点数や利用者数の動向はSMSの人材紹介事業のパイプラインに影響。IR情報から業界全体の成長率を推察できる",
+    "monitoringPoints": [
+      "拠点数の増減（ウェルビー・ハビー等）",
+      "四半期決算の就労実績・定着率",
+      "新サービス・新業態への参入",
+      "人材採用動向（拡大/縮小シグナル）"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "ウェルビー IR", "url": "https://welbe.co.jp/ir/", "frequency": "四半期" }
+    ],
+    "officialUrl": "https://welbe.co.jp/",
+    "stockCode": "6556",
+    "operator": null,
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L2-003",
+    "name": "ココルポート",
+    "nameKana": "ここるぽーと",
+    "layer": 2,
+    "subCategory": null,
+    "summary": "就労移行支援の急成長上場企業（旧Melk）。グロース市場上場でIR情報が公開され、成長戦略を追跡可能",
+    "impactLevel": "medium",
+    "affectedBusiness": ["recruitment", "media"],
+    "impactDetail": {
+      "recruitment": "medium",
+      "media": "medium",
+      "saas": "none"
+    },
+    "monitoringReason": "旧Melkから社名変更。就労移行支援で急速に拠点拡大中のグロース市場上場企業。成長戦略（地方展開、新サービス等）はSMS人材紹介事業にとっての競合動向として重要",
+    "monitoringPoints": [
+      "拠点数の拡大ペース",
+      "四半期決算の業績推移",
+      "新規サービス・事業領域への展開",
+      "資金調達・M&Aの動向"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "ココルポート IR", "url": "https://www.cocorport.co.jp/ir/", "frequency": "四半期" }
+    ],
+    "officialUrl": "https://www.cocorport.co.jp/",
+    "stockCode": "9346",
+    "operator": null,
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L2-004",
+    "name": "AHCグループ",
+    "nameKana": "えーえいちしーぐるーぷ",
+    "layer": 2,
+    "subCategory": null,
+    "summary": "障害福祉・介護サービスの上場企業。事業規模は小さいが、業界再編の動向を示す指標として監視",
+    "impactLevel": "low",
+    "affectedBusiness": ["recruitment"],
+    "impactDetail": {
+      "recruitment": "low",
+      "media": "none",
+      "saas": "none"
+    },
+    "monitoringReason": "障害福祉・介護サービスを展開するグロース市場上場企業。事業規模はSMSと比較して小さいが、中小事業者の経営動向や業界再編の先行指標として参考になる",
+    "monitoringPoints": [
+      "業績推移と事業継続性",
+      "M&A・事業提携の動向",
+      "新規参入・撤退の動き"
+    ],
+    "recommendedFrequency": "quarterly",
+    "sources": [
+      { "name": "AHCグループ IR", "url": "https://ahc-group.co.jp/ir/", "frequency": "四半期" }
+    ],
+    "officialUrl": "https://ahc-group.co.jp/",
+    "stockCode": "7083",
+    "operator": null,
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3A-001",
+    "name": "atGP",
+    "nameKana": "あっとじーぴー",
+    "layer": 3,
+    "subCategory": "3-A 人材紹介競合",
+    "summary": "ゼネラルパートナーズ運営の障害者転職支援サービス。障害者人材紹介の老舗で、SMSの最大の直接競合",
+    "impactLevel": "high",
+    "affectedBusiness": ["recruitment", "media"],
+    "impactDetail": {
+      "recruitment": "high",
+      "media": "medium",
+      "saas": "none"
+    },
+    "monitoringReason": "障害者専門の転職支援サービスとして最も知名度が高い。人材紹介・求人メディア・就労移行支援の3事業を展開し、SMSの人材紹介事業と直接競合。サービス内容・価格・マーケティング施策の変化を注視すべき",
+    "monitoringPoints": [
+      "求人数・登録者数の推移",
+      "新サービス・機能リリース",
+      "広告・マーケティング施策の変化",
+      "就労移行支援拠点の拡大状況"
+    ],
+    "recommendedFrequency": "weekly",
+    "sources": [
+      { "name": "atGP公式サイト", "url": "https://www.atgp.jp/", "frequency": "随時" },
+      { "name": "ゼネラルパートナーズ コーポレート", "url": "https://www.generalpartners.co.jp/", "frequency": "月次" }
+    ],
+    "officialUrl": "https://www.atgp.jp/",
+    "stockCode": null,
+    "operator": "ゼネラルパートナーズ",
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3A-002",
+    "name": "dodaチャレンジ",
+    "nameKana": "でゅーだちゃれんじ",
+    "layer": 3,
+    "subCategory": "3-A 人材紹介競合",
+    "summary": "パーソルチャレンジ運営の障害者転職支援。パーソルグループの総合力を背景に企業開拓力が高い",
+    "impactLevel": "high",
+    "affectedBusiness": ["recruitment"],
+    "impactDetail": {
+      "recruitment": "high",
+      "media": "low",
+      "saas": "none"
+    },
+    "monitoringReason": "パーソルグループの障害者雇用支援子会社が運営。グループの企業ネットワークを活用した求人開拓力が強み。大手企業への障害者紹介でSMSと直接競合する",
+    "monitoringPoints": [
+      "求人数・成約件数の推移",
+      "パーソルグループ内の位置づけ変化",
+      "新サービス（定着支援等）のリリース",
+      "マーケティング施策の変化"
+    ],
+    "recommendedFrequency": "weekly",
+    "sources": [
+      { "name": "dodaチャレンジ公式", "url": "https://doda.jp/challenge/", "frequency": "随時" },
+      { "name": "パーソルチャレンジ コーポレート", "url": "https://persol-challenge.co.jp/", "frequency": "月次" }
+    ],
+    "officialUrl": "https://doda.jp/challenge/",
+    "stockCode": null,
+    "operator": "パーソルチャレンジ",
+    "relatedEntities": ["L5-003"],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3A-003",
+    "name": "クローバーナビ",
+    "nameKana": "くろーばーなび",
+    "layer": 3,
+    "subCategory": "3-A 人材紹介競合",
+    "summary": "トーコンマーケティング運営の障害者求人サイト。メディア型で求人掲載中心のビジネスモデル",
+    "impactLevel": "medium",
+    "affectedBusiness": ["recruitment", "media"],
+    "impactDetail": {
+      "recruitment": "medium",
+      "media": "medium",
+      "saas": "none"
+    },
+    "monitoringReason": "障害者向け求人メディアとして一定のポジションを持つ。メディア型ビジネスモデルのため、SMSのメディア事業（就労支援ナビ）との競合面も注視が必要",
+    "monitoringPoints": [
+      "掲載求人数の推移",
+      "サイトリニューアル・機能追加",
+      "集客施策の変化"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "クローバーナビ公式", "url": "https://www.clover-navi.com/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://www.clover-navi.com/",
+    "stockCode": null,
+    "operator": "トーコンマーケティング",
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3A-004",
+    "name": "障害者雇用バンク",
+    "nameKana": "しょうがいしゃこようばんく",
+    "layer": 3,
+    "subCategory": "3-A 人材紹介競合",
+    "summary": "スペシファイ運営の障害者求人サイト。Web完結型の登録プロセスが特徴",
+    "impactLevel": "low",
+    "affectedBusiness": ["recruitment"],
+    "impactDetail": {
+      "recruitment": "low",
+      "media": "none",
+      "saas": "none"
+    },
+    "monitoringReason": "Web完結型の障害者求人マッチングサービス。現時点での市場シェアは限定的だが、テクノロジー活用型のアプローチが拡大する可能性がある",
+    "monitoringPoints": [
+      "サービス機能の拡充",
+      "登録者数・求人数の成長",
+      "資金調達の動向"
+    ],
+    "recommendedFrequency": "quarterly",
+    "sources": [
+      { "name": "障害者雇用バンク公式", "url": "https://syougai-koyo-bank.com/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://syougai-koyo-bank.com/",
+    "stockCode": null,
+    "operator": "スペシファイ",
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3A-005",
+    "name": "WEBサーナ",
+    "nameKana": "うぇぶさーな",
+    "layer": 3,
+    "subCategory": "3-A 人材紹介競合",
+    "summary": "イフ運営の障害者求人情報サイト。合同面接会（サーナ就職フェスタ）も展開",
+    "impactLevel": "low",
+    "affectedBusiness": ["recruitment"],
+    "impactDetail": {
+      "recruitment": "low",
+      "media": "none",
+      "saas": "none"
+    },
+    "monitoringReason": "障害者向け求人サイトとして長年の実績を持つ。合同面接会（サーナ就職フェスタ）も定期的に開催しており、オフラインチャネルでの競合面も存在",
+    "monitoringPoints": [
+      "サイト機能・UI変更",
+      "合同面接会の開催頻度・参加企業数",
+      "新規サービスの展開"
+    ],
+    "recommendedFrequency": "quarterly",
+    "sources": [
+      { "name": "WEBサーナ公式", "url": "https://www.web-sana.com/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://www.web-sana.com/",
+    "stockCode": null,
+    "operator": "イフ",
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3A-006",
+    "name": "リコモス",
+    "nameKana": "りこもす",
+    "layer": 3,
+    "subCategory": "3-A 人材紹介競合",
+    "summary": "リコモス運営の障害者人材紹介サービス。比較的新興のプレイヤー",
+    "impactLevel": "low",
+    "affectedBusiness": ["recruitment"],
+    "impactDetail": {
+      "recruitment": "low",
+      "media": "none",
+      "saas": "none"
+    },
+    "monitoringReason": "比較的新興の障害者人材紹介サービス。現時点での影響は限定的だが、差別化戦略や成長速度を定期的に確認しておくべき",
+    "monitoringPoints": [
+      "サービスの成長率",
+      "差別化ポイントの変化",
+      "資金調達・提携の動向"
+    ],
+    "recommendedFrequency": "quarterly",
+    "sources": [
+      { "name": "リコモス公式", "url": "https://www.ricomos.co.jp/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://www.ricomos.co.jp/",
+    "stockCode": null,
+    "operator": "リコモス",
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3B-001",
+    "name": "LITALICO仕事ナビ",
+    "nameKana": "りたりこしごとなび",
+    "layer": 3,
+    "subCategory": "3-B メディア競合",
+    "summary": "LITALICOが運営する障害者向け就労支援事業所の検索・口コミサイト。SMSの就労支援ナビの最大競合",
+    "impactLevel": "high",
+    "affectedBusiness": ["media"],
+    "impactDetail": {
+      "recruitment": "medium",
+      "media": "high",
+      "saas": "none"
+    },
+    "monitoringReason": "SMSの就労支援ナビと直接競合するメディアプラットフォーム。LITALICOのブランド力と自社就労移行支援拠点のネットワークを活用した集客力が強み。SEO戦略やコンテンツ施策の変化を注視すべき",
+    "monitoringPoints": [
+      "掲載事業所数の推移",
+      "SEOランキング変動（主要キーワード）",
+      "新機能・コンテンツの追加",
+      "広告商品の変更・価格改定"
+    ],
+    "recommendedFrequency": "weekly",
+    "sources": [
+      { "name": "LITALICO仕事ナビ", "url": "https://snabi.jp/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://snabi.jp/",
+    "stockCode": null,
+    "operator": "LITALICO",
+    "relatedEntities": ["L2-001", "L3B-002"],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3B-002",
+    "name": "LITALICO発達ナビ",
+    "nameKana": "りたりこはったつなび",
+    "layer": 3,
+    "subCategory": "3-B メディア競合",
+    "summary": "LITALICOが運営する発達障害ポータルサイト。児童領域が中心だが、成人向けコンテンツも拡充中",
+    "impactLevel": "medium",
+    "affectedBusiness": ["media"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "medium",
+      "saas": "none"
+    },
+    "monitoringReason": "発達障害に関する情報プラットフォーム。児童向けコンテンツが中心だが、成人の就労に関するコンテンツも拡充しており、SMSのメディア事業の潜在的競合。ユーザーの成長とともに就労支援領域への誘導が強まる可能性",
+    "monitoringPoints": [
+      "成人向け就労コンテンツの拡充状況",
+      "PV数・ユーザー数の成長",
+      "新機能・マネタイズ手法の変化"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "LITALICO発達ナビ", "url": "https://h-navi.jp/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://h-navi.jp/",
+    "stockCode": null,
+    "operator": "LITALICO",
+    "relatedEntities": ["L2-001", "L3B-001"],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3C-001",
+    "name": "knowbe（ノウビー）",
+    "nameKana": "のうびー",
+    "layer": 3,
+    "subCategory": "3-C SaaS競合",
+    "summary": "就労支援事業所向けSaaS。利用者管理・記録・請求を一気通貫で提供。かべなしクラウドの最大競合",
+    "impactLevel": "high",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "high"
+    },
+    "monitoringReason": "就労系障害福祉サービス事業所に特化したクラウドサービスで、かべなしクラウドの最も直接的な競合。利用者管理・支援記録・国保連請求を一気通貫で提供。機能追加や価格変更を常時監視すべき",
+    "monitoringPoints": [
+      "新機能リリース・アップデート情報",
+      "価格改定・料金プランの変更",
+      "導入事業所数の推移",
+      "マーケティング施策（展示会・セミナー等）"
+    ],
+    "recommendedFrequency": "weekly",
+    "sources": [
+      { "name": "knowbe公式サイト", "url": "https://knowbe.jp/", "frequency": "随時" },
+      { "name": "knowbe お知らせ", "url": "https://knowbe.jp/news/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://knowbe.jp/",
+    "stockCode": null,
+    "operator": "株式会社のうびー",
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3C-002",
+    "name": "HUG（ハグ）",
+    "nameKana": "はぐ",
+    "layer": 3,
+    "subCategory": "3-C SaaS競合",
+    "summary": "ネットアーツ運営の放デイ・児童発達支援向けSaaS。児童系では高シェアだが就労系にも展開可能性",
+    "impactLevel": "medium",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "medium"
+    },
+    "monitoringReason": "放課後等デイサービス・児童発達支援に特化したクラウドサービスで、児童系では高いシェアを持つ。就労系サービスへの事業拡大の可能性があり、動向を注視すべき",
+    "monitoringPoints": [
+      "就労系サービスへの事業拡大の動き",
+      "導入事業所数の推移",
+      "機能追加・新サービスのリリース"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "HUG公式サイト", "url": "https://hugkidsystems.com/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://hugkidsystems.com/",
+    "stockCode": null,
+    "operator": "ネットアーツ",
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3C-003",
+    "name": "ほのぼのmore",
+    "nameKana": "ほのぼのもあ",
+    "layer": 3,
+    "subCategory": "3-C SaaS競合",
+    "summary": "NDソフトウェア運営の介護・障害福祉向け総合システム。介護領域からの横展開で障害福祉市場にも浸透",
+    "impactLevel": "medium",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "medium"
+    },
+    "monitoringReason": "介護分野で高いシェアを持つNDソフトウェアが障害福祉領域にも展開。大規模法人への導入実績があり、介護と障害福祉を併設する事業者でのクロスセルが強み",
+    "monitoringPoints": [
+      "障害福祉向け機能の拡充状況",
+      "導入事業所数（障害福祉分野）",
+      "介護側との機能連携の動向"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "NDソフトウェア公式", "url": "https://www.ndsoft.jp/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://www.ndsoft.jp/",
+    "stockCode": null,
+    "operator": "NDソフトウェア",
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3C-004",
+    "name": "介舟ファミリー",
+    "nameKana": "かいしゅうふぁみりー",
+    "layer": 3,
+    "subCategory": "3-C SaaS競合",
+    "summary": "NCC運営の介護・障害福祉向け請求ソフト。オンプレミスからクラウド移行を進めている",
+    "impactLevel": "medium",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "medium"
+    },
+    "monitoringReason": "介護・障害福祉向けの老舗請求ソフト。従来はオンプレミス型だったが、クラウド版への移行を進めている。既存ユーザーのリプレース先としてかべなしクラウドと競合しうる",
+    "monitoringPoints": [
+      "クラウド移行の進捗",
+      "新機能・料金プランの変更",
+      "ユーザーの移行動向"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "介舟ファミリー公式", "url": "https://www.kaisyuf.jp/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://www.kaisyuf.jp/",
+    "stockCode": null,
+    "operator": "NCC",
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3C-005",
+    "name": "ポチパス",
+    "nameKana": "ぽちぱす",
+    "layer": 3,
+    "subCategory": "3-C SaaS競合",
+    "summary": "障害福祉向けSaaS（要調査）。詳細な事業内容・運営会社の情報を確認中",
+    "impactLevel": "low",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "low"
+    },
+    "monitoringReason": "障害福祉向けのクラウドサービスとして名前が挙がっているが、詳細な事業内容や市場シェアは調査中",
+    "monitoringPoints": [
+      "サービス内容・対象領域の特定",
+      "運営会社の規模・資金力",
+      "導入事業所数"
+    ],
+    "recommendedFrequency": "quarterly",
+    "sources": [],
+    "officialUrl": null,
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": [],
+    "notes": "要調査：詳細な事業内容・運営会社の確認が必要",
+    "status": "research_needed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3C-006",
+    "name": "かんたん請求ソフト",
+    "nameKana": "かんたんせいきゅうそふと",
+    "layer": 3,
+    "subCategory": "3-C SaaS競合",
+    "summary": "LITALICO運営の障害福祉向け請求ソフト。LITALICOの事業所ネットワークを活用した拡販が強み",
+    "impactLevel": "medium",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "medium"
+    },
+    "monitoringReason": "LITALICOが自社の障害福祉事業所運営ノウハウを基に開発した請求ソフト。LITALICO自身のブランド力と全国の事業所ネットワークを活用した拡販戦略が脅威。かんたん請求ソフト→仕事ナビのクロスセルも懸念点",
+    "monitoringPoints": [
+      "機能追加・アップデート情報",
+      "導入事業所数の推移",
+      "料金プランの変更",
+      "LITALICOプラットフォーム内でのクロスセル施策"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "かんたん請求ソフト", "url": "https://litalico.co.jp/business/billing/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://litalico.co.jp/business/billing/",
+    "stockCode": null,
+    "operator": "LITALICO",
+    "relatedEntities": ["L2-001"],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L3C-007",
+    "name": "ケアコラボ",
+    "nameKana": "けあこらぼ",
+    "layer": 3,
+    "subCategory": "3-C SaaS競合",
+    "summary": "ケアコラボ運営の介護・障害福祉向け記録共有サービス。記録の見える化に特化したサービス",
+    "impactLevel": "low",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "low"
+    },
+    "monitoringReason": "介護・障害福祉向けの記録共有に特化したクラウドサービス。請求機能は持たないが、記録機能の使い勝手でかべなしクラウドのユーザー体験との比較対象になりうる",
+    "monitoringPoints": [
+      "機能追加・UI改善の動向",
+      "導入事業所数の推移",
+      "他ツールとの連携状況"
+    ],
+    "recommendedFrequency": "quarterly",
+    "sources": [
+      { "name": "ケアコラボ公式", "url": "https://www.carecollabo.jp/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://www.carecollabo.jp/",
+    "stockCode": null,
+    "operator": "ケアコラボ",
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L4-001",
+    "name": "Lean on Me（Special Learning）",
+    "nameKana": "りーんおんみー すぺしゃるらーにんぐ",
+    "layer": 4,
+    "subCategory": null,
+    "summary": "障害福祉事業所スタッフ向けのeラーニングサービス。事業所の研修DXニーズを取り込む周辺プレイヤー",
+    "impactLevel": "medium",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "medium"
+    },
+    "monitoringReason": "障害福祉事業所向けのeラーニングサービス（Special Learning）を提供。かべなしクラウドのユーザーが研修管理でこのサービスを併用するケースがあり、連携・統合の可能性やバンドル提供の脅威を注視",
+    "monitoringPoints": [
+      "サービス機能の拡充（記録・請求領域への進出）",
+      "導入事業所数の推移",
+      "他SaaSとの連携・提携動向",
+      "資金調達の状況"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "Special Learning公式", "url": "https://special-learning.jp/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://special-learning.jp/",
+    "stockCode": null,
+    "operator": "Lean on Me",
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L4-002",
+    "name": "デコボコベース",
+    "nameKana": "でこぼこべーす",
+    "layer": 4,
+    "subCategory": null,
+    "summary": "発達障害・障害者向けの情報プラットフォーム。事業所と利用者のマッチング機能で周辺領域から競合化の可能性",
+    "impactLevel": "medium",
+    "affectedBusiness": ["media", "recruitment"],
+    "impactDetail": {
+      "recruitment": "low",
+      "media": "medium",
+      "saas": "none"
+    },
+    "monitoringReason": "障害者・発達障害者向けの情報プラットフォームとして成長中。事業所検索・口コミ機能を持ち、SMSのメディア事業との競合面が出てくる可能性。利用者と事業所のマッチング機能の強化次第で人材紹介領域にも進出しうる",
+    "monitoringPoints": [
+      "プラットフォーム機能の拡充",
+      "掲載事業所数・ユーザー数の推移",
+      "人材紹介・就職支援領域への進出",
+      "資金調達の状況"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "デコボコベース公式", "url": "https://decobocobase.com/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://decobocobase.com/",
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L4-003",
+    "name": "キモチプラス",
+    "nameKana": "きもちぷらす",
+    "layer": 4,
+    "subCategory": null,
+    "summary": "障害福祉関連サービス（要調査）。詳細な事業内容・影響範囲を確認中",
+    "impactLevel": "low",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "low"
+    },
+    "monitoringReason": "障害福祉関連のサービスとして名前が挙がっているが、事業内容・対象領域の詳細は調査中。影響範囲の特定が必要",
+    "monitoringPoints": [
+      "サービス内容・対象領域の特定",
+      "運営会社の規模・資金力",
+      "障害福祉市場での位置づけ"
+    ],
+    "recommendedFrequency": "quarterly",
+    "sources": [],
+    "officialUrl": null,
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": [],
+    "notes": "要調査：事業内容・影響範囲の詳細確認が必要",
+    "status": "research_needed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L4-004",
+    "name": "シエンシー",
+    "nameKana": "しえんしー",
+    "layer": 4,
+    "subCategory": null,
+    "summary": "障害福祉領域の周辺サービスプレイヤー。現時点での直接的な競合度は低いが動向を注視",
+    "impactLevel": "low",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "low"
+    },
+    "monitoringReason": "障害福祉領域の周辺サービスを提供。現時点での直接的な競合度は低いが、事業拡大や新サービスの展開により影響が出る可能性がある",
+    "monitoringPoints": [
+      "新サービス・事業領域の拡大",
+      "障害福祉市場での認知度・シェアの変化",
+      "提携・資金調達の動向"
+    ],
+    "recommendedFrequency": "quarterly",
+    "sources": [
+      { "name": "シエンシー公式", "url": "https://shienthy.com/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://shienthy.com/",
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L5-001",
+    "name": "LayerX",
+    "nameKana": "れいやーえっくす",
+    "layer": 5,
+    "subCategory": null,
+    "summary": "バクラク（経理DX SaaS）を展開するテック企業。AI-BPOの先行事例としてビジネスモデルを参照",
+    "impactLevel": "high",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "high"
+    },
+    "monitoringReason": "バクラク（経理DX）でAI-OCR→SaaS→BPOの事業展開モデルを確立した先行事例。SMSのAI BPO構想にとって最も参考になるビジネスモデル。技術アプローチ・プロダクト戦略・GTM戦略すべてが参照対象",
+    "monitoringPoints": [
+      "AI-BPO・AI代行サービスの展開状況",
+      "新機能・新プロダクトのリリース",
+      "技術ブログ・カンファレンス発表での技術動向",
+      "資金調達・事業規模の成長"
+    ],
+    "recommendedFrequency": "weekly",
+    "sources": [
+      { "name": "LayerX公式", "url": "https://layerx.co.jp/", "frequency": "随時" },
+      { "name": "LayerX Tech Blog", "url": "https://tech.layerx.co.jp/", "frequency": "週次" }
+    ],
+    "officialUrl": "https://layerx.co.jp/",
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L5-002",
+    "name": "リクルート",
+    "nameKana": "りくるーと",
+    "layer": 5,
+    "subCategory": null,
+    "summary": "Indeed・リクナビ等を擁する人材業界最大手。AIマッチング・Indeed PLUSの技術が障害者人材領域に波及する可能性",
+    "impactLevel": "medium",
+    "affectedBusiness": ["recruitment", "media"],
+    "impactDetail": {
+      "recruitment": "medium",
+      "media": "medium",
+      "saas": "none"
+    },
+    "monitoringReason": "人材業界最大手でAIマッチング技術の先行者。Indeed PLUSによるAI求人マッチングが障害者人材領域に波及した場合、SMSの人材紹介事業のビジネスモデル自体が変わる可能性がある。1-3年後の技術トレンドの先行指標",
+    "monitoringPoints": [
+      "Indeed PLUSのAIマッチング技術の進化",
+      "障害者採用関連の新サービス・機能",
+      "HRテクノロジーの技術発表・特許出願",
+      "人材業界のDX・AI活用事例の発信"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "リクルート プレスリリース", "url": "https://www.recruit.co.jp/newsroom/", "frequency": "随時" },
+      { "name": "リクルート テックブログ", "url": "https://blog.recruit.co.jp/", "frequency": "月次" }
+    ],
+    "officialUrl": "https://www.recruit.co.jp/",
+    "stockCode": "6098",
+    "operator": null,
+    "relatedEntities": [],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L5-003",
+    "name": "パーソルグループ",
+    "nameKana": "ぱーそるぐるーぷ",
+    "layer": 5,
+    "subCategory": null,
+    "summary": "doda・テンプスタッフ等を擁する人材業界大手。パーソルチャレンジを通じた障害者雇用のテクノロジー活用が参照対象",
+    "impactLevel": "medium",
+    "affectedBusiness": ["recruitment"],
+    "impactDetail": {
+      "recruitment": "medium",
+      "media": "low",
+      "saas": "none"
+    },
+    "monitoringReason": "人材業界2位でパーソルチャレンジを通じた障害者雇用支援にも注力。グループ全体のAI・テクノロジー活用方針が障害者人材紹介にも波及する可能性。dodaチャレンジとの連携強化にも注意",
+    "monitoringPoints": [
+      "グループ全体のAI・テクノロジー戦略",
+      "障害者雇用支援事業の拡大動向",
+      "パーソルチャレンジとの連携強化",
+      "HRテクノロジーの新規投資・提携"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "パーソルHD IR", "url": "https://www.persol-group.co.jp/ir/", "frequency": "四半期" }
+    ],
+    "officialUrl": "https://www.persol-group.co.jp/",
+    "stockCode": "2181",
+    "operator": null,
+    "relatedEntities": ["L3A-002"],
+    "notes": null,
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L5-004",
+    "name": "freee / マネーフォワード",
+    "nameKana": "ふりー まねーふぉわーど",
+    "layer": 5,
+    "subCategory": null,
+    "summary": "会計SaaSの先行企業。SaaS×AI×BPOのビジネスモデル進化が福祉SaaSの将来像を示唆",
+    "impactLevel": "low",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "low"
+    },
+    "monitoringReason": "会計SaaSの2大企業。SaaS→AI自動仕訳→BPO代行というビジネスモデルの進化パターンは、かべなしクラウドの将来ロードマップの参考になる。特にAI-BPO分野での先行事例として参照価値が高い",
+    "monitoringPoints": [
+      "AI活用機能（自動仕訳・AI経理等）の進化",
+      "BPO事業の展開状況",
+      "新規業種・領域への展開",
+      "プラットフォーム戦略の変化"
+    ],
+    "recommendedFrequency": "quarterly",
+    "sources": [
+      { "name": "freee IR", "url": "https://corp.freee.co.jp/ir/", "frequency": "四半期" },
+      { "name": "マネーフォワード IR", "url": "https://corp.moneyforward.com/ir/", "frequency": "四半期" }
+    ],
+    "officialUrl": "https://corp.freee.co.jp/",
+    "stockCode": "4478",
+    "operator": null,
+    "relatedEntities": [],
+    "notes": "freee（4478）とマネーフォワード（3994）を1エンティティとして監視",
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L5-005",
+    "name": "Ubie / メドレー",
+    "nameKana": "ゆーびー めどれー",
+    "layer": 5,
+    "subCategory": null,
+    "summary": "医療×AI SaaSの先行企業。ヘルスケア領域のAI活用・規制対応のアプローチが福祉領域にも参考になる",
+    "impactLevel": "low",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "low"
+    },
+    "monitoringReason": "医療×AI SaaSの先行企業。ヘルスケア領域でのAI活用（AI問診・CLINICS等）や規制環境下でのプロダクト開発アプローチは、障害福祉SaaSの将来像を考える上で参考になる",
+    "monitoringPoints": [
+      "AI活用機能の進化と規制対応",
+      "福祉・介護領域への事業展開",
+      "ヘルスケアSaaSの市場動向",
+      "技術ブログ・カンファレンスでの発信"
+    ],
+    "recommendedFrequency": "quarterly",
+    "sources": [
+      { "name": "Ubie公式", "url": "https://ubie.life/", "frequency": "随時" },
+      { "name": "メドレー IR", "url": "https://www.medley.jp/ir/", "frequency": "四半期" }
+    ],
+    "officialUrl": "https://ubie.life/",
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": [],
+    "notes": "Ubieとメドレーを医療AIの先行指標として1エンティティで監視",
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L5-006",
+    "name": "OpenAI / Anthropic / Google DeepMind",
+    "nameKana": "おーぷんえーあい あんそろぴっく ぐーぐるでぃーぷまいんど",
+    "layer": 5,
+    "subCategory": null,
+    "summary": "基盤AIモデルの開発企業群。LLM・マルチモーダルAIの進化がAI BPO事業の技術基盤に直接影響",
+    "impactLevel": "low",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "none",
+      "media": "none",
+      "saas": "low"
+    },
+    "monitoringReason": "基盤AIモデルの進化（LLM・マルチモーダル・エージェント）はSMSのAI BPO構想の技術基盤に直接影響。モデルの性能向上・コスト低下は新しいユースケースの実現可能性を拡げる",
+    "monitoringPoints": [
+      "新モデルのリリースと性能ベンチマーク",
+      "API価格の変動",
+      "エージェント・自律AI技術の進化",
+      "規制・安全性に関する動向",
+      "日本語対応の改善状況"
+    ],
+    "recommendedFrequency": "weekly",
+    "sources": [
+      { "name": "OpenAI Blog", "url": "https://openai.com/blog/", "frequency": "随時" },
+      { "name": "Anthropic Blog", "url": "https://www.anthropic.com/news", "frequency": "随時" },
+      { "name": "Google DeepMind Blog", "url": "https://deepmind.google/discover/blog/", "frequency": "随時" }
+    ],
+    "officialUrl": "https://openai.com/",
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": [],
+    "notes": "3社を基盤AI技術の先行指標として1エンティティで監視",
+    "status": "confirmed",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村"
+  }
+]

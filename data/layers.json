@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "政策・規制当局",
+    "nameEn": "Policy & Regulation",
+    "description": "障害福祉制度の根幹を決定する主体",
+    "color": "#DC2626",
+    "icon": "🏛️"
+  },
+  {
+    "id": 2,
+    "name": "上場事業運営会社",
+    "nameEn": "Listed Operators",
+    "description": "IR情報から市場動向を読み取れる上場企業",
+    "color": "#2563EB",
+    "icon": "📈"
+  },
+  {
+    "id": 3,
+    "name": "直接競合",
+    "nameEn": "Direct Competitors",
+    "description": "SMS3事業の直接競合企業・サービス",
+    "color": "#D97706",
+    "icon": "⚔️"
+  },
+  {
+    "id": 4,
+    "name": "周辺サービス・新興プレイヤー",
+    "nameEn": "Adjacent Services",
+    "description": "バリューチェーン上で影響力を持つサービス",
+    "color": "#059669",
+    "icon": "🔗"
+  },
+  {
+    "id": 5,
+    "name": "技術波及の先行指標",
+    "nameEn": "Technology Indicators",
+    "description": "1〜3年後に波及しうる技術トレンドの先駆者",
+    "color": "#7C3AED",
+    "icon": "🔬"
+  }
+]
