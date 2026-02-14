@@ -11,7 +11,7 @@ export function getGeminiModel() {
   if (!genAI) {
     throw new Error("GEMINI_API_KEY is not configured")
   }
-  return genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
+  return genAI.getGenerativeModel({ model: "gemini-3-pro" })
 }
 
 export { genAI }
