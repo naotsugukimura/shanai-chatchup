@@ -16,6 +16,10 @@ import { TriggerCard } from "./TriggerCard"
 import { NewsTimeline } from "./NewsTimeline"
 import { SupplyChainTree } from "./SupplyChainTree"
 import { RiskScenarioPanel } from "./RiskScenarioPanel"
+import { AIChatPanel } from "./AIChatPanel"
+import { AISearchPanel } from "./AISearchPanel"
+import { AINewsSummary } from "./AINewsSummary"
+import { AIRiskAnalysis } from "./AIRiskAnalysis"
 import { LayerBadge } from "./LayerBadge"
 import type {
   Entity,
@@ -199,6 +203,9 @@ export function DashboardClient({ entities, layers, triggers, news, supplyChainD
           </TabsTrigger>
           <TabsTrigger value="entities" className="text-sm">
             エンティティ ({entities.length})
+          </TabsTrigger>
+          <TabsTrigger value="ai" className="text-sm">
+            🤖 AI分析
           </TabsTrigger>
         </TabsList>
 
@@ -458,7 +465,39 @@ export function DashboardClient({ entities, layers, triggers, news, supplyChainD
             entities={entities}
           />
         </TabsContent>
+
+        <TabsContent value="ai">
+          <div className="space-y-8">
+            {/* AI横断検索 */}
+            <section>
+              <AISearchPanel />
+            </section>
+
+            {/* AIニュース要約 */}
+            <section>
+              <div className="flex items-center gap-2 mb-4 pb-2 border-b">
+                <span className="text-xl">📰</span>
+                <h2 className="font-bold text-lg">AIニュース分析</h2>
+                <span className="text-xs text-muted-foreground">ニュースの要約・影響分析・ブリーフィング生成</span>
+              </div>
+              <AINewsSummary />
+            </section>
+
+            {/* AIリスク深層分析 */}
+            <section>
+              <div className="flex items-center gap-2 mb-4 pb-2 border-b">
+                <span className="text-xl">⚠️</span>
+                <h2 className="font-bold text-lg">AIリスク深層分析</h2>
+                <span className="text-xs text-muted-foreground">既存シナリオまたはカスタムシナリオの深層分析</span>
+              </div>
+              <AIRiskAnalysis scenarios={riskScenarios} />
+            </section>
+          </div>
+        </TabsContent>
       </Tabs>
+
+      {/* フローティングAIチャット（全画面共通） */}
+      <AIChatPanel />
     </div>
   )
 }
