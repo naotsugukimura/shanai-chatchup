@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { SearchBar } from "./SearchBar"
 import type { NewsItem, Entity } from "@/lib/types"
 import { NEWS_CATEGORIES } from "@/lib/constants"
@@ -16,6 +17,34 @@ interface NewsTimelineProps {
 export function NewsTimeline({ news, entities }: NewsTimelineProps) {
   const [search, setSearch] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [isCrawling, setIsCrawling] = useState(false)
+  const [crawlResult, setCrawlResult] = useState<string | null>(null)
+
+  const handleManualCrawl = useCallback(async () => {
+    if (isCrawling) return
+    setIsCrawling(true)
+    setCrawlResult(null)
+
+    try {
+      const res = await fetch("/api/crawl-manual", { method: "POST" })
+      const data = await res.json()
+      if (data.error) {
+        setCrawlResult(`❌ エラー: ${data.error}`)
+      } else {
+        setCrawlResult(
+          `✅ ${data.queriesExecuted}クエリ実行 → ${data.newArticles}件の新規ニュースを取得${data.errors?.length > 0 ? ` (警告${data.errors.length}件)` : ""}`
+        )
+        // 3秒後にページリロード（新しいニュースを表示）
+        if (data.newArticles > 0) {
+          setTimeout(() => window.location.reload(), 3000)
+        }
+      }
+    } catch {
+      setCrawlResult("❌ 通信エラーが発生しました")
+    } finally {
+      setIsCrawling(false)
+    }
+  }, [isCrawling])
 
   const entityMap = useMemo(() => createIdMap(entities), [entities])
 
@@ -81,6 +110,28 @@ export function NewsTimeline({ news, entities }: NewsTimelineProps) {
             {categoryCounts["policy"] || 0}
           </p>
         </div>
+      </div>
+
+      {/* Manual Crawl Button */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <Button
+          onClick={handleManualCrawl}
+          disabled={isCrawling}
+          className="bg-[#1a2744] hover:bg-[#2a3754] text-white"
+          size="sm"
+        >
+          {isCrawling ? (
+            <span className="flex items-center gap-2">
+              <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              クロール中...
+            </span>
+          ) : (
+            "🔄 今すぐニュースを取得"
+          )}
+        </Button>
+        {crawlResult && (
+          <p className="text-xs">{crawlResult}</p>
+        )}
       </div>
 
       {/* Search + Category Filter */}
