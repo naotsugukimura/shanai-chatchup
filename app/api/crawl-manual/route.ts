@@ -10,9 +10,9 @@ export async function POST() {
     // まずKVにシードデータを投入（初回のみ）
     await seedFromJson()
 
-    // クローリング実行
-    console.log("[Manual] ニュースクローリング開始...")
-    const result = await runDailyCrawl()
+    // クローリング実行（手動クロールはスケジュール無視で全クエリ実行）
+    console.log("[Manual] ニュースクローリング開始（全クエリ実行）...")
+    const result = await runDailyCrawl(true)
     console.log(
       `[Manual] 完了: ${result.queriesExecuted}クエリ, ${result.newArticles}件追加`
     )

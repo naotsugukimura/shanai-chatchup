@@ -112,6 +112,13 @@ export function getTodaysQueries(): SearchQueryGroup[] {
 }
 
 /**
+ * 全クエリグループを返す（手動クロール用、曜日フィルタなし）
+ */
+export function getAllQueries(): SearchQueryGroup[] {
+  return QUERY_GROUPS
+}
+
+/**
  * 全クエリ数を計算（今日の分）
  */
 export function getTodaysQueryCount(): number {

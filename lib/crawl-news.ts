@@ -1,5 +1,5 @@
 import { getGeminiModel } from "@/lib/gemini"
-import { getTodaysQueries } from "@/lib/search-queries"
+import { getTodaysQueries, getAllQueries } from "@/lib/search-queries"
 import { addNews, getKnownUrls, getNextId, setLastCrawled } from "@/lib/news-store"
 import entitiesData from "@/data/entities.json"
 import type { NewsItem } from "@/lib/types"
@@ -153,7 +153,7 @@ ${articlesText}
 /**
  * 日次クローリングのメイン処理
  */
-export async function runDailyCrawl(): Promise<CrawlResult> {
+export async function runDailyCrawl(forceAll = false): Promise<CrawlResult> {
   const errors: string[] = []
   const timestamp = new Date().toISOString()
   let queriesExecuted = 0
@@ -163,9 +163,9 @@ export async function runDailyCrawl(): Promise<CrawlResult> {
   // 既知URLを取得（重複排除用）
   const knownUrls = await getKnownUrls()
 
-  // 今日のクエリグループを取得
-  const todaysGroups = getTodaysQueries()
-  const allQueries = todaysGroups.flatMap((g) => g.queries)
+  // クエリグループを取得（forceAll=trueの場合は全グループ、それ以外は今日の曜日分のみ）
+  const groups = forceAll ? getAllQueries() : getTodaysQueries()
+  const allQueries = groups.flatMap((g) => g.queries)
 
   // 全検索結果を収集
   const allSearchResults: GoogleSearchResult[] = []
