@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getGeminiModel } from "@/lib/gemini"
 import entitiesData from "@/data/entities.json"
-import newsData from "@/data/news.json"
+import { getAllNews } from "@/lib/news-store"
 import riskScenariosData from "@/data/risk-scenarios.json"
 import supplyChainData from "@/data/supply-chain.json"
 import triggersData from "@/data/triggers.json"
@@ -16,12 +16,15 @@ export async function POST(req: NextRequest) {
 
     const model = getGeminiModel()
 
+    // KVからニュースを動的に取得
+    const newsItems = await getAllNews()
+
     // Build comprehensive context
     const entityContext = (entitiesData as { id: string; name: string; nameKana?: string; summary: string; layer: number; subCategory?: string | null; monitoringReason: string }[])
       .map((e) => `[${e.id}] ${e.name} (L${e.layer}${e.subCategory ? ", " + e.subCategory : ""}): ${e.summary} | 監視理由: ${e.monitoringReason}`)
       .join("\n")
 
-    const newsContext = (newsData as { id: string; title: string; date: string; summary: string; category: string }[])
+    const newsContext = newsItems
       .map((n) => `[${n.id}][${n.date}] ${n.title}: ${n.summary}`)
       .join("\n")
 

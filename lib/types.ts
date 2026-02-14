@@ -86,6 +86,8 @@ export interface NewsItem {
   relatedEntityIds: string[];
   category: "product" | "partnership" | "funding" | "policy" | "market" | "technology";
   summary: string;
+  crawledAt?: string;   // ISO8601、クロール日時（自動取得の場合）
+  isManual?: boolean;   // true = 手動登録（旧news.jsonのデータ）
 }
 
 export interface SupplyChainNode {

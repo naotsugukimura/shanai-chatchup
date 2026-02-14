@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getGeminiModel } from "@/lib/gemini"
 import entitiesData from "@/data/entities.json"
-import newsData from "@/data/news.json"
+import { getAllNews } from "@/lib/news-store"
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       (entitiesData as { id: string; name: string; layer: number }[]).map((e) => [e.id, e])
     )
 
-    const allNews = newsData as { id: string; title: string; date: string; source: string; summary: string; relatedEntityIds: string[]; category: string }[]
+    const allNews = await getAllNews()
     const targetNews = newsIds && newsIds.length > 0
       ? allNews.filter((n) => newsIds.includes(n.id))
       : allNews
