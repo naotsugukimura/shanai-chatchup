@@ -1,0 +1,266 @@
+[
+  {
+    "id": "T-001",
+    "title": "2027年度 障害福祉サービス報酬改定",
+    "category": "policy_change",
+    "summary": "3年に1度の報酬改定。次回は2027年度予定。加算体系・基本報酬の見直しがSaaS事業の請求ロジックに直接影響",
+    "impactLevel": "high",
+    "affectedBusiness": ["all"],
+    "keywords": ["報酬改定", "障害福祉", "2027年度", "基本報酬", "加算"],
+    "timeframe": "2026年後半〜2027年4月",
+    "monitoringReason": "報酬改定はかべなしクラウドの請求機能に直接影響。新加算・廃止加算への対応が必要。また報酬単価の変更は事業所の経営に影響し、メディア・人材紹介の市場環境も変化する",
+    "monitoringPoints": [
+      "社会保障審議会障害者部会の審議状況",
+      "報酬改定検討チームの設置時期",
+      "改定率の方向性（プラス/マイナス）",
+      "就労系サービスの報酬体系の見直し内容",
+      "処遇改善加算の統合・簡素化の動向"
+    ],
+    "relatedEntities": ["L1-001", "L1-003"],
+    "sources": [
+      { "name": "社会保障審議会障害者部会", "url": "https://www.mhlw.go.jp/stf/shingi/shingi-hosho_126730.html", "frequency": "月1-2回" }
+    ],
+    "status": "upcoming",
+    "expectedDate": "2027-04-01",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村",
+    "notes": null
+  },
+  {
+    "id": "T-002",
+    "title": "法定雇用率 2.7%引き上げ",
+    "category": "regulatory",
+    "summary": "2026年7月から法定雇用率が2.5%→2.7%に引き上げ。企業の障害者採用需要が増加し、人材紹介市場が拡大する見込み",
+    "impactLevel": "high",
+    "affectedBusiness": ["recruitment"],
+    "keywords": ["法定雇用率", "2.7%", "障害者雇用促進法", "雇用率引き上げ"],
+    "timeframe": "2026年7月施行",
+    "monitoringReason": "法定雇用率の引き上げは企業の障害者採用ニーズを直接押し上げ、人材紹介事業の市場規模拡大に直結。同時に競合の人材紹介サービスも活性化するため、競争環境の変化にも注意が必要",
+    "monitoringPoints": [
+      "施行に向けた企業の採用活動の変化",
+      "ハローワーク経由の求人動向",
+      "競合（atGP, dodaチャレンジ等）の営業施策の変化",
+      "除外率の段階的廃止の影響範囲"
+    ],
+    "relatedEntities": ["L1-002", "L3A-001", "L3A-002"],
+    "sources": [
+      { "name": "厚労省 障害者雇用対策", "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/koyou/shougaishakoyou/index.html", "frequency": "随時" }
+    ],
+    "status": "active",
+    "expectedDate": "2026-07-01",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村",
+    "notes": null
+  },
+  {
+    "id": "T-003",
+    "title": "AI-BPO事業モデルの台頭",
+    "category": "technology",
+    "summary": "SaaS提供にとどまらず、AI活用による業務プロセス代行（AI-BPO）へのビジネスモデル進化。LayerX等が先行",
+    "impactLevel": "high",
+    "affectedBusiness": ["saas"],
+    "keywords": ["AI-BPO", "AI代行", "業務プロセス自動化", "RPA", "LLM"],
+    "timeframe": "2025年〜2027年",
+    "monitoringReason": "SaaSの次の進化形として、AIによる業務プロセス代行（AI-BPO）が台頭。かべなしクラウドがAI-BPOモデルに進化できるかは事業の将来性を左右する。LayerXのバクラクが先行事例",
+    "monitoringPoints": [
+      "LayerXのAI-BPO事業の進捗",
+      "freee / マネーフォワードのAI機能の進化",
+      "LLMの性能向上とコスト低下",
+      "福祉分野でのAI活用事例",
+      "AI-OCR→請求自動化のユースケース拡大"
+    ],
+    "relatedEntities": ["L5-001", "L5-004", "L5-006"],
+    "sources": [
+      { "name": "LayerX Tech Blog", "url": "https://tech.layerx.co.jp/", "frequency": "週次" },
+      { "name": "AI関連ニュース", "url": "https://www.itmedia.co.jp/ai/", "frequency": "随時" }
+    ],
+    "status": "monitoring",
+    "expectedDate": null,
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村",
+    "notes": null
+  },
+  {
+    "id": "T-004",
+    "title": "障害福祉領域へのIT大手参入",
+    "category": "market_entry",
+    "summary": "介護領域のIT大手（NDソフトウェア等）が障害福祉市場に本格参入する動き。市場の競争環境が変化する可能性",
+    "impactLevel": "medium",
+    "affectedBusiness": ["saas"],
+    "keywords": ["異業種参入", "IT大手", "障害福祉SaaS", "NDソフトウェア", "介護DX"],
+    "timeframe": "継続的に監視",
+    "monitoringReason": "介護領域で高いシェアを持つIT企業が障害福祉市場に本格参入すれば、資本力・既存顧客基盤を活かした競争が激化する。特に介護と障害福祉を併設する事業者からのシェア奪取リスク",
+    "monitoringPoints": [
+      "NDソフトウェアの障害福祉向け機能拡充",
+      "介護SaaS大手（カイポケ等）の障害福祉展開",
+      "異業種からのM&Aによる参入",
+      "自治体システムベンダーの福祉分野進出"
+    ],
+    "relatedEntities": ["L3C-003", "L3C-004"],
+    "sources": [
+      { "name": "福祉系IT業界ニュース", "url": "https://www.atpress.ne.jp/", "frequency": "随時" }
+    ],
+    "status": "monitoring",
+    "expectedDate": null,
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村",
+    "notes": null
+  },
+  {
+    "id": "T-005",
+    "title": "就労選択支援の本格施行",
+    "category": "policy_change",
+    "summary": "障害者総合支援法改正により新設された就労選択支援制度。施行状況やルール変更がSMS事業全体に影響",
+    "impactLevel": "high",
+    "affectedBusiness": ["all"],
+    "keywords": ["就労選択支援", "障害者総合支援法", "就労アセスメント", "新制度"],
+    "timeframe": "2025年10月〜",
+    "monitoringReason": "就労選択支援は障害者の就労に関する新しい制度で、就労移行支援・就労A/Bへの利用フローが変わる可能性がある。SaaSの請求・記録機能への対応、メディアでの情報提供、人材紹介への利用者流入に影響",
+    "monitoringPoints": [
+      "施行後の利用状況・課題",
+      "ルール変更・Q&Aの発出",
+      "報酬単価の設定",
+      "事業所の対応状況"
+    ],
+    "relatedEntities": ["L1-001"],
+    "sources": [
+      { "name": "厚労省 就労選択支援関連", "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/shougaishahukushi/index.html", "frequency": "随時" }
+    ],
+    "status": "active",
+    "expectedDate": null,
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村",
+    "notes": null
+  },
+  {
+    "id": "T-006",
+    "title": "障害福祉領域のM&A・業界再編",
+    "category": "ma",
+    "summary": "障害福祉事業所の経営統合・M&Aが加速する可能性。大手による中小事業所の買収は人材紹介・SaaS双方に影響",
+    "impactLevel": "medium",
+    "affectedBusiness": ["all"],
+    "keywords": ["M&A", "業界再編", "経営統合", "事業譲渡", "障害福祉事業所"],
+    "timeframe": "継続的に監視",
+    "monitoringReason": "報酬改定や人材不足を背景に、障害福祉事業所のM&Aが増加傾向。大手による中小の吸収が進むと、SaaS導入の意思決定者が変わり、人材紹介のチャネルも変化する",
+    "monitoringPoints": [
+      "上場企業のM&A発表",
+      "事業所の廃業・譲渡の動向",
+      "ファンドの福祉事業投資",
+      "地域ごとの事業所数の増減"
+    ],
+    "relatedEntities": ["L2-001", "L2-002", "L2-003"],
+    "sources": [
+      { "name": "M&Aニュース", "url": "https://maonline.jp/", "frequency": "随時" },
+      { "name": "適時開示", "url": "https://www.release.tdnet.info/", "frequency": "随時" }
+    ],
+    "status": "monitoring",
+    "expectedDate": null,
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村",
+    "notes": null
+  },
+  {
+    "id": "T-007",
+    "title": "精神障害者の雇用カウント方法の見直し",
+    "category": "regulatory",
+    "summary": "精神障害者の短時間勤務者の雇用カウント方法が見直される可能性。人材紹介のマッチング条件に影響",
+    "impactLevel": "medium",
+    "affectedBusiness": ["recruitment"],
+    "keywords": ["精神障害者", "雇用カウント", "短時間勤務", "0.5カウント"],
+    "timeframe": "次回法改正時",
+    "monitoringReason": "精神障害者の短時間勤務（20時間以上30時間未満）のカウント方法が0.5→1に変更される可能性が議論されている。実現すれば企業の精神障害者採用ニーズが変化し、マッチング条件にも影響",
+    "monitoringPoints": [
+      "労働政策審議会での議論状況",
+      "カウント方法変更の方向性",
+      "企業の反応・意見",
+      "施行時期の見込み"
+    ],
+    "relatedEntities": ["L1-002"],
+    "sources": [
+      { "name": "労働政策審議会 障害者雇用分科会", "url": "https://www.mhlw.go.jp/stf/shingi/shingi-rousei_126985.html", "frequency": "月次" }
+    ],
+    "status": "monitoring",
+    "expectedDate": null,
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村",
+    "notes": null
+  },
+  {
+    "id": "T-008",
+    "title": "福祉データの標準化・API連携",
+    "category": "technology",
+    "summary": "デジタル庁主導の行政DXにより、福祉データの標準化・API連携が進む可能性。SaaSの技術要件に長期的に影響",
+    "impactLevel": "low",
+    "affectedBusiness": ["saas"],
+    "keywords": ["データ標準化", "API連携", "デジタル庁", "マイナンバー", "行政DX"],
+    "timeframe": "2026年〜2028年",
+    "monitoringReason": "自治体システムの標準化やマイナンバーとの連携が進めば、SaaSに標準API対応が求められる可能性。対応の遅れは競争劣位につながるが、逆に先行対応は差別化要因にもなりうる",
+    "monitoringPoints": [
+      "自治体システム標準化の進捗",
+      "福祉分野のデータ交換仕様の策定",
+      "マイナンバー連携の具体的方針",
+      "先行自治体の実証実験"
+    ],
+    "relatedEntities": ["L1-005"],
+    "sources": [
+      { "name": "デジタル庁", "url": "https://www.digital.go.jp/", "frequency": "四半期" }
+    ],
+    "status": "monitoring",
+    "expectedDate": null,
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村",
+    "notes": null
+  },
+  {
+    "id": "T-009",
+    "title": "LITALICOプラットフォーム戦略の拡大",
+    "category": "market_shift",
+    "summary": "LITALICOが就労支援×メディア×SaaSの統合プラットフォーム化を加速。3事業すべてでSMSと全面競合の深化",
+    "impactLevel": "high",
+    "affectedBusiness": ["all"],
+    "keywords": ["LITALICO", "プラットフォーム", "統合", "クロスセル", "エコシステム"],
+    "timeframe": "継続的に監視",
+    "monitoringReason": "LITALICOは就労移行支援・仕事ナビ・かんたん請求ソフトを組み合わせたエコシステム構築を進めている。個別の競合対策ではなく、プラットフォーム全体の進化を注視すべき",
+    "monitoringPoints": [
+      "事業間クロスセル施策の展開",
+      "新規事業・M&Aによる領域拡大",
+      "IR資料でのプラットフォーム戦略の言及",
+      "かんたん請求ソフトと仕事ナビの連携強化"
+    ],
+    "relatedEntities": ["L2-001", "L3B-001", "L3C-006"],
+    "sources": [
+      { "name": "LITALICO IR", "url": "https://litalico.co.jp/ir/", "frequency": "四半期" }
+    ],
+    "status": "active",
+    "expectedDate": null,
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村",
+    "notes": null
+  },
+  {
+    "id": "T-010",
+    "title": "処遇改善加算の一本化",
+    "category": "policy_change",
+    "summary": "3種の処遇改善加算（処遇改善・特定処遇改善・ベースアップ支援）の一本化が検討中。SaaS請求ロジックに大きな影響",
+    "impactLevel": "medium",
+    "affectedBusiness": ["saas"],
+    "keywords": ["処遇改善加算", "一本化", "統合", "給与計算", "請求ソフト"],
+    "timeframe": "2027年度報酬改定時",
+    "monitoringReason": "処遇改善加算の一本化は事業所の事務負担軽減が目的だが、SaaS側では請求ロジックの大幅な改修が必要になる。早期に方向性を把握し、対応計画を立てることが重要",
+    "monitoringPoints": [
+      "報酬改定審議での議論内容",
+      "一本化の具体的な制度設計",
+      "経過措置の有無と期間",
+      "事業所向けQ&Aの発出"
+    ],
+    "relatedEntities": ["L1-001"],
+    "sources": [
+      { "name": "社会保障審議会障害者部会", "url": "https://www.mhlw.go.jp/stf/shingi/shingi-hosho_126730.html", "frequency": "月次" }
+    ],
+    "status": "upcoming",
+    "expectedDate": "2027-04-01",
+    "lastUpdated": "2026-02-14",
+    "addedBy": "木村",
+    "notes": null
+  }
+]
