@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { NewsItem, Entity } from "@/lib/types"
-import { NEWS_CATEGORIES } from "@/lib/constants"
+import { NEWS_CATEGORIES, NEWS_IMPACT_CONFIG } from "@/lib/constants"
 
 function isUrlLikeTitle(title: string): boolean {
   const t = title.trim()
@@ -178,6 +178,14 @@ export function NewsDetailSheet({ selectedItem, entityMap, onClose }: NewsDetail
             >
               {cat?.icon} {cat?.label}
             </Badge>
+            {selectedItem.impact && NEWS_IMPACT_CONFIG[selectedItem.impact] && (
+              <Badge
+                variant="outline"
+                className={`text-[9px] px-1.5 py-0 border ${NEWS_IMPACT_CONFIG[selectedItem.impact].bgColor}`}
+              >
+                {NEWS_IMPACT_CONFIG[selectedItem.impact].label}
+              </Badge>
+            )}
             <span className="text-[10px] text-muted-foreground">
               {selectedItem.date} / {selectedItem.source}
             </span>

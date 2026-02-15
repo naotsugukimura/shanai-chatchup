@@ -150,6 +150,10 @@ ${articlesList}
 - ★最重要★ urlの値は上記リストのURLをそのまま使ってください。URLを変更・生成しないでください。
 - ★重要★ titleは「どの企業/団体が何をしたのか」が一目でわかる日本語タイトルにしてください。URLやドメイン名をタイトルにしないでください。例:「LITALICO、就労支援向け新SaaSツールを発表」「厚労省、障害者法定雇用率を2.7%に引き上げへ」
 - categoryは必ず以下の6つのいずれか: product, partnership, funding, policy, market, technology
+- impactは自社事業（SaaS・人材紹介・メディア事業を運営する障害福祉サービス企業）への影響度。必ず以下の3つのいずれか: high, medium, low
+  - high: 直接的な競合の動き、法改正、報酬改定など事業に大きく影響する
+  - medium: 業界トレンド、間接的な影響がある動向
+  - low: 参考情報レベル、すぐの影響は小さい
 - summaryは100文字以内の日本語で記事内容を要約
 - relatedEntityIdsは以下のエンティティリストから該当するものを選択（該当なしなら空配列）
 - dateは記事の公開日をYYYY-MM-DD形式（不明なら今日の日付: ${new Date().toISOString().slice(0, 10)}）
@@ -167,6 +171,7 @@ ${entityList}
     "source": "サイト名",
     "date": "YYYY-MM-DD",
     "category": "policy",
+    "impact": "high",
     "summary": "100文字以内の要約",
     "relatedEntityIds": ["L1-001"]
   }
@@ -213,6 +218,9 @@ ${entityList}
           source: String(item.source || "不明"),
           date: String(item.date || new Date().toISOString().slice(0, 10)),
           category: item.category as NewsItem["category"],
+          impact: (["high", "medium", "low"].includes(item.impact as string)
+            ? item.impact as NewsItem["impact"]
+            : "medium"),
           summary: String(item.summary).slice(0, 150),
           relatedEntityIds: Array.isArray(item.relatedEntityIds)
             ? (item.relatedEntityIds as string[]).filter((id) => typeof id === "string")

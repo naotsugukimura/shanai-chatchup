@@ -1,4 +1,4 @@
-import type { BusinessArea, ImpactLevel } from "./types"
+import type { BusinessArea, ImpactLevel, NewsImpact } from "./types"
 
 export const BUSINESS_AREAS: readonly BusinessArea[] = [
   "recruitment",
@@ -31,6 +31,15 @@ export const NEWS_CATEGORIES: Record<
   policy: { label: "政策", color: "#DC2626", icon: "🏛️" },
   market: { label: "市場動向", color: "#F59E0B", icon: "📈" },
   technology: { label: "技術", color: "#10B981", icon: "🔬" },
+}
+
+export const NEWS_IMPACT_CONFIG: Record<
+  NewsImpact,
+  { label: string; color: string; bgColor: string }
+> = {
+  high: { label: "重要", color: "#DC2626", bgColor: "bg-red-50 text-red-700 border-red-200" },
+  medium: { label: "注目", color: "#F59E0B", bgColor: "bg-amber-50 text-amber-700 border-amber-200" },
+  low: { label: "参考", color: "#6B7280", bgColor: "bg-gray-50 text-gray-600 border-gray-200" },
 }
 
 export const INFLUENCE_COLORS: Record<

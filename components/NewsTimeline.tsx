@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { SearchBar } from "./SearchBar"
 import { NewsDetailSheet } from "./NewsDetailSheet"
 import type { NewsItem, Entity } from "@/lib/types"
-import { NEWS_CATEGORIES } from "@/lib/constants"
+import { NEWS_CATEGORIES, NEWS_IMPACT_CONFIG } from "@/lib/constants"
 import { createIdMap } from "@/lib/utils"
 
 /**
@@ -231,6 +231,14 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
                         >
                           {cat?.icon} {cat?.label}
                         </Badge>
+                        {item.impact && NEWS_IMPACT_CONFIG[item.impact] && (
+                          <Badge
+                            variant="outline"
+                            className={`text-[9px] px-1.5 py-0 border ${NEWS_IMPACT_CONFIG[item.impact].bgColor}`}
+                          >
+                            {NEWS_IMPACT_CONFIG[item.impact].label}
+                          </Badge>
+                        )}
                         {isNew && (
                           <Badge className="text-[10px] px-1.5 py-0 bg-green-500 text-white border-0 animate-pulse">
                             NEW

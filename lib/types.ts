@@ -77,6 +77,8 @@ export type DashboardAction =
   | { type: "TOGGLE_EXPAND"; entityId: string }
   | { type: "CLEAR_FILTERS" };
 
+export type NewsImpact = "high" | "medium" | "low";
+
 export interface NewsItem {
   id: string;
   title: string;
@@ -86,9 +88,10 @@ export interface NewsItem {
   relatedEntityIds: string[];
   category: "product" | "partnership" | "funding" | "policy" | "market" | "technology";
   summary: string;
-  crawledAt?: string;   // ISO8601、クロール日時（自動取得の場合）
-  isManual?: boolean;   // true = 手動登録（旧news.jsonのデータ）
-  urlVerified?: boolean; // true = grounding metadataで確認済みURL
+  impact?: NewsImpact;    // AIが判定した自社事業への影響度
+  crawledAt?: string;     // ISO8601、クロール日時（自動取得の場合）
+  isManual?: boolean;     // true = 手動登録（旧news.jsonのデータ）
+  urlVerified?: boolean;  // true = grounding metadataで確認済みURL
 }
 
 export interface SupplyChainNode {
