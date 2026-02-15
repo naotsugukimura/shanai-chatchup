@@ -189,24 +189,26 @@ export function DashboardClient({ entities, layers, triggers, news, lastCrawled,
   return (
     <div className="max-w-[1600px] mx-auto px-4 py-4">
       <Tabs defaultValue="news">
-        <TabsList className="mb-4">
+        <TabsList className="mb-4 flex-wrap h-auto gap-1">
           <TabsTrigger value="news" className="text-sm">
             ニュース ({news.length})
           </TabsTrigger>
-          <TabsTrigger value="supply-chain" className="text-sm">
-            影響連鎖
-          </TabsTrigger>
-          <TabsTrigger value="risk" className="text-sm">
-            リスクシナリオ ({riskScenarios.length})
-          </TabsTrigger>
           <TabsTrigger value="triggers" className="text-sm">
-            トリガー/テーマ ({triggers.length})
-          </TabsTrigger>
-          <TabsTrigger value="entities" className="text-sm">
-            エンティティ ({entities.length})
+            テーマトリガー ({triggers.length})
           </TabsTrigger>
           <TabsTrigger value="ai" className="text-sm">
             🤖 AI分析
+          </TabsTrigger>
+          <TabsTrigger value="risk" className="text-sm">
+            リスクシナリオ ({riskScenarios.length})
+            <span className="ml-1 text-[9px] text-muted-foreground">α</span>
+          </TabsTrigger>
+          <TabsTrigger value="supply-chain" className="text-sm">
+            影響連鎖
+            <span className="ml-1 text-[9px] text-muted-foreground">α</span>
+          </TabsTrigger>
+          <TabsTrigger value="entities" className="text-sm">
+            エンティティ ({entities.length})
           </TabsTrigger>
         </TabsList>
 
