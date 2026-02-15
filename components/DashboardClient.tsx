@@ -187,27 +187,27 @@ export function DashboardClient({ entities, layers, triggers, news, lastCrawled,
     (state.filters.searchText ? 1 : 0)
 
   return (
-    <div className="max-w-[1600px] mx-auto px-4 py-4">
+    <div className="max-w-[1600px] mx-auto px-2 sm:px-4 py-3 sm:py-4">
       <Tabs defaultValue="news">
-        <TabsList className="mb-4 flex-wrap h-auto gap-1">
-          <TabsTrigger value="news" className="text-sm">
+        <TabsList className="mb-3 sm:mb-4 flex-wrap !h-auto gap-1 !w-full sm:!w-fit p-1">
+          <TabsTrigger value="news" className="text-xs sm:text-sm">
             ニュース ({news.length})
           </TabsTrigger>
-          <TabsTrigger value="triggers" className="text-sm">
+          <TabsTrigger value="triggers" className="text-xs sm:text-sm">
             テーマトリガー ({triggers.length})
           </TabsTrigger>
-          <TabsTrigger value="ai" className="text-sm">
+          <TabsTrigger value="ai" className="text-xs sm:text-sm">
             🤖 AI分析
           </TabsTrigger>
-          <TabsTrigger value="risk" className="text-sm">
-            リスクシナリオ ({riskScenarios.length})
+          <TabsTrigger value="risk" className="text-xs sm:text-sm">
+            リスクシナリオ
             <span className="ml-1 text-[9px] text-muted-foreground">α</span>
           </TabsTrigger>
-          <TabsTrigger value="supply-chain" className="text-sm">
+          <TabsTrigger value="supply-chain" className="text-xs sm:text-sm">
             影響連鎖
             <span className="ml-1 text-[9px] text-muted-foreground">α</span>
           </TabsTrigger>
-          <TabsTrigger value="entities" className="text-sm">
+          <TabsTrigger value="entities" className="text-xs sm:text-sm hidden sm:inline-flex">
             エンティティ ({entities.length})
           </TabsTrigger>
         </TabsList>

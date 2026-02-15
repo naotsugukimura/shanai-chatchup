@@ -39,7 +39,7 @@ export function ViewToggle({
   return (
     <div className="flex items-center gap-2">
       <Select value={sortBy} onValueChange={(v) => onSortChange(v as SortMode)}>
-        <SelectTrigger className="h-8 text-xs w-[130px]">
+        <SelectTrigger className="h-8 text-xs w-[110px] sm:w-[130px]">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

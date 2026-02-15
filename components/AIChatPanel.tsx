@@ -117,7 +117,7 @@ export function AIChatPanel() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-[400px] h-[560px] bg-background border rounded-xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-2 sm:inset-auto sm:bottom-6 sm:right-6 z-50 sm:w-[400px] sm:h-[560px] bg-background border rounded-xl shadow-2xl flex flex-col overflow-hidden">
       {/* ヘッダー */}
       <div className="bg-[#1a2744] text-white px-4 py-3 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">

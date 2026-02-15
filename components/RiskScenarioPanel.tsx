@@ -51,7 +51,7 @@ export function RiskScenarioPanel({ scenarios, entities }: RiskScenarioPanelProp
   return (
     <div className="space-y-4">
       {/* Summary KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
         <div className="border rounded-lg p-3">
           <p className="text-[10px] text-muted-foreground mb-1">総シナリオ数</p>
           <p className="text-2xl font-bold">{scenarios.length}</p>
@@ -173,7 +173,7 @@ export function RiskScenarioPanel({ scenarios, entities }: RiskScenarioPanelProp
             <Card>
               <CardContent className="p-4">
                 <h3 className="font-bold text-sm mb-3">1. インパクト分析</h3>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
                   {selected.impactKPIs.map((kpi, i) => (
                     <div key={i} className="border rounded-lg p-3">
                       <p className="text-[10px] text-muted-foreground mb-1">

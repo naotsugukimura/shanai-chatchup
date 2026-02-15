@@ -10,8 +10,8 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "SCI Dashboard - サプライチェーン・インテリジェンス",
-  description: "障害福祉支援部 競合・規制環境 監視ダッシュボード",
+  title: "競合情報ダッシュボード",
+  description: "障害福祉支援部 競合情報ダッシュボード",
 };
 
 export default function RootLayout({
@@ -21,6 +21,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+      </head>
       <body className={`${notoSansJP.variable} font-sans antialiased`}>
         <TooltipProvider>{children}</TooltipProvider>
       </body>

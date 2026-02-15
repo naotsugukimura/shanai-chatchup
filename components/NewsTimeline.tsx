@@ -127,29 +127,29 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
   return (
     <div className="space-y-4">
       {/* Summary */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <div className="border rounded-lg p-4">
-          <p className="text-xs text-muted-foreground mb-1">総ニュース数</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+        <div className="border rounded-lg p-3 sm:p-4">
+          <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">総ニュース数</p>
           <p className="text-2xl font-bold">{news.length}</p>
         </div>
-        <div className="border rounded-lg p-4">
-          <p className="text-xs text-muted-foreground mb-1">新着 (24h)</p>
+        <div className="border rounded-lg p-3 sm:p-4">
+          <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">新着 (24h)</p>
           <p className="text-2xl font-bold text-green-500">
             {newArticleCount > 0 ? `+${newArticleCount}` : "0"}
           </p>
         </div>
-        <div className="border rounded-lg p-4">
-          <p className="text-xs text-muted-foreground mb-1">直近7日</p>
+        <div className="border rounded-lg p-3 sm:p-4">
+          <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">直近7日</p>
           <p className="text-2xl font-bold text-blue-500">{recentCount}</p>
         </div>
-        <div className="border rounded-lg p-4">
-          <p className="text-xs text-muted-foreground mb-1">政策関連</p>
+        <div className="border rounded-lg p-3 sm:p-4">
+          <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">政策関連</p>
           <p className="text-2xl font-bold text-red-500">
             {categoryCounts["policy"] || 0}
           </p>
         </div>
-        <div className="border rounded-lg p-4">
-          <p className="text-xs text-muted-foreground mb-1">最終更新</p>
+        <div className="border rounded-lg p-3 sm:p-4">
+          <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">最終更新</p>
           <p className="text-lg font-bold" suppressHydrationWarning>
             {lastCrawled && mounted ? formatRelativeTime(lastCrawled) : lastCrawled ? "-" : "未取得"}
           </p>
@@ -167,16 +167,16 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
       </div>
 
       {/* Search + Category Filter */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <div className="max-w-md flex-1">
+      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+        <div className="w-full sm:max-w-md sm:flex-1">
           <SearchBar value={search} onChange={setSearch} />
         </div>
-        <div className="flex gap-1.5 flex-wrap">
+        <div className="flex gap-1 sm:gap-1.5 flex-wrap">
           {Object.entries(NEWS_CATEGORIES).map(([key, cat]) => (
             <button
               key={key}
               onClick={() => setSelectedCategory(selectedCategory === key ? null : key)}
-              className={`text-[11px] px-2 py-1 rounded-full border transition-colors ${
+              className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border transition-colors ${
                 selectedCategory === key
                   ? "text-white border-transparent"
                   : "text-muted-foreground hover:border-foreground/30"
@@ -197,19 +197,19 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
 
       {/* Timeline */}
       <div className="relative">
-        <div className="absolute left-4 top-0 bottom-0 w-px bg-border" />
-        <div className="space-y-4">
+        <div className="absolute left-2 sm:left-4 top-0 bottom-0 w-px bg-border" />
+        <div className="space-y-3 sm:space-y-4">
           {filteredNews.map((item) => {
             const cat = NEWS_CATEGORIES[item.category]
             const isNew = mounted && isNewArticle(item.crawledAt)
             return (
-              <div key={item.id} className="relative pl-10">
+              <div key={item.id} className="relative pl-6 sm:pl-10">
                 <div
-                  className="absolute left-2.5 top-4 w-3 h-3 rounded-full border-2 border-background"
+                  className="absolute left-0.5 sm:left-2.5 top-4 w-3 h-3 rounded-full border-2 border-background"
                   style={{ backgroundColor: cat?.color ?? "#6b7280" }}
                 />
                 <Card className={isNew ? "ring-1 ring-green-400/50 bg-green-50/30 dark:bg-green-950/10" : ""}>
-                  <CardContent className="p-4">
+                  <CardContent className="p-3 sm:p-4">
                     <div className="flex items-start justify-between gap-2 mb-1.5">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <Badge
