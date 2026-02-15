@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 import { runDailyCrawl } from "@/lib/crawl-news"
 import { seedFromJson } from "@/lib/news-store"
 
@@ -16,6 +17,11 @@ export async function POST() {
     console.log(
       `[Manual] 完了: ${result.queriesExecuted}クエリ, ${result.newArticles}件追加`
     )
+
+    // ISRキャッシュを無効化してトップページを再生成
+    if (result.newArticles > 0) {
+      revalidatePath("/")
+    }
 
     return NextResponse.json(result)
   } catch (error) {

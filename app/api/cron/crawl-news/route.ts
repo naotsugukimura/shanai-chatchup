@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 import { runDailyCrawl } from "@/lib/crawl-news"
 
 // Vercel Cron から呼び出される日次クローリングエンドポイント
@@ -24,6 +25,11 @@ export async function GET(req: NextRequest) {
 
     if (result.errors.length > 0) {
       console.warn("[Cron] エラー:", result.errors)
+    }
+
+    // ISRキャッシュを無効化してトップページを再生成
+    if (result.newArticles > 0) {
+      revalidatePath("/")
     }
 
     return NextResponse.json(result)
