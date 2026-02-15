@@ -153,8 +153,8 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
           <p className="text-lg font-bold" suppressHydrationWarning>
             {lastCrawled && mounted ? formatRelativeTime(lastCrawled) : lastCrawled ? "-" : "未取得"}
           </p>
-          {lastCrawled && (
-            <p className="text-[10px] text-muted-foreground mt-0.5">
+          {lastCrawled && mounted && (
+            <p className="text-[10px] text-muted-foreground mt-0.5" suppressHydrationWarning>
               {new Date(lastCrawled).toLocaleString("ja-JP", {
                 month: "short",
                 day: "numeric",
@@ -231,7 +231,7 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
                         </span>
                       </div>
                       {item.crawledAt && mounted && (
-                        <span className="text-[9px] text-muted-foreground whitespace-nowrap" suppressHydrationWarning title={`取得: ${new Date(item.crawledAt).toLocaleString("ja-JP")}`}>
+                        <span className="text-[9px] text-muted-foreground whitespace-nowrap">
                           取得 {formatRelativeTime(item.crawledAt)}
                         </span>
                       )}
