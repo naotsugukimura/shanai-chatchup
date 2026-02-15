@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useCallback } from "react"
+import { useState, useMemo, useCallback, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SearchBar } from "./SearchBar"
@@ -39,11 +39,14 @@ function isNewArticle(crawledAt: string | undefined): boolean {
 }
 
 export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps) {
+  const [mounted, setMounted] = useState(false)
   const [search, setSearch] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedItem, setSelectedItem] = useState<NewsItem | null>(null)
   const [isCrawling, setIsCrawling] = useState(false)
   const [crawlResult, setCrawlResult] = useState<string | null>(null)
+
+  useEffect(() => { setMounted(true) }, [])
 
   const handleManualCrawl = useCallback(async () => {
     if (isCrawling) return
@@ -105,20 +108,21 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
     return counts
   }, [news])
 
-  // 新着記事数（24時間以内にクロールされた記事）
+  // 新着記事数（24時間以内にクロールされた記事） - mountedで再計算
   const newArticleCount = useMemo(
-    () => news.filter((n) => isNewArticle(n.crawledAt)).length,
-    [news]
+    () => mounted ? news.filter((n) => isNewArticle(n.crawledAt)).length : 0,
+    [news, mounted]
   )
 
-  // 直近7日のニュース数
+  // 直近7日のニュース数 - mountedで再計算
   const recentCount = useMemo(() => {
+    if (!mounted) return 0
     const now = new Date()
     return news.filter((n) => {
       const d = new Date(n.date)
       return now.getTime() - d.getTime() < 7 * 24 * 60 * 60 * 1000
     }).length
-  }, [news])
+  }, [news, mounted])
 
   return (
     <div className="space-y-4">
@@ -146,8 +150,8 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
         </div>
         <div className="border rounded-lg p-4">
           <p className="text-xs text-muted-foreground mb-1">最終更新</p>
-          <p className="text-lg font-bold">
-            {lastCrawled ? formatRelativeTime(lastCrawled) : "未取得"}
+          <p className="text-lg font-bold" suppressHydrationWarning>
+            {lastCrawled && mounted ? formatRelativeTime(lastCrawled) : lastCrawled ? "-" : "未取得"}
           </p>
           {lastCrawled && (
             <p className="text-[10px] text-muted-foreground mt-0.5">
@@ -197,7 +201,7 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
         <div className="space-y-4">
           {filteredNews.map((item) => {
             const cat = NEWS_CATEGORIES[item.category]
-            const isNew = isNewArticle(item.crawledAt)
+            const isNew = mounted && isNewArticle(item.crawledAt)
             return (
               <div key={item.id} className="relative pl-10">
                 <div
@@ -226,8 +230,8 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
                           / {item.source}
                         </span>
                       </div>
-                      {item.crawledAt && (
-                        <span className="text-[9px] text-muted-foreground whitespace-nowrap" title={`取得: ${new Date(item.crawledAt).toLocaleString("ja-JP")}`}>
+                      {item.crawledAt && mounted && (
+                        <span className="text-[9px] text-muted-foreground whitespace-nowrap" suppressHydrationWarning title={`取得: ${new Date(item.crawledAt).toLocaleString("ja-JP")}`}>
                           取得 {formatRelativeTime(item.crawledAt)}
                         </span>
                       )}
