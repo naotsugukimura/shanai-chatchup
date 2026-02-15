@@ -148,6 +148,52 @@ export async function setAnalysisCache(newsId: string, mode: string, analysis: s
 }
 
 /**
+ * URL未確認の記事を削除（urlVerified === false のデータを除去）
+ */
+export async function removeUnverifiedNews(): Promise<number> {
+  if (!redis) return 0
+
+  const existing = (await redis.get<NewsItem[]>(NEWS_KEY)) ?? []
+  const removedUrls: string[] = []
+
+  const cleaned = existing.filter((item) => {
+    if (item.urlVerified === false) {
+      removedUrls.push(item.url)
+      return false
+    }
+    return true
+  })
+
+  const removed = existing.length - cleaned.length
+  if (removed === 0) return 0
+
+  await redis.set(NEWS_KEY, cleaned)
+
+  // URLセットからも削除
+  for (const url of removedUrls) {
+    await redis.srem(URLS_KEY, url)
+  }
+
+  return removed
+}
+
+/**
+ * 全ニュースデータを削除（リセット用）
+ */
+export async function clearAllNews(): Promise<number> {
+  if (!redis) return 0
+
+  const existing = (await redis.get<NewsItem[]>(NEWS_KEY)) ?? []
+  const count = existing.length
+  if (count === 0) return 0
+
+  await redis.set(NEWS_KEY, [])
+  await redis.del(URLS_KEY)
+
+  return count
+}
+
+/**
  * サンプルデータを削除（example.comやisManual=trueのデータを除去）
  */
 export async function removeSampleData(): Promise<number> {

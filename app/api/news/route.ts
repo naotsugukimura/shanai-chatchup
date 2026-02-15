@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
-import { getAllNews, getLastCrawled, removeSampleData } from "@/lib/news-store"
+import { getAllNews, getLastCrawled, removeSampleData, removeUnverifiedNews, clearAllNews } from "@/lib/news-store"
 
 // ニュース取得API（GET）
 export async function GET() {
@@ -20,18 +20,42 @@ export async function GET() {
   }
 }
 
-// サンプルデータ削除用
-export async function POST() {
+// ニュース管理API（POST）
+// action: "remove-sample" | "remove-unverified" | "clear-all"
+export async function POST(req: NextRequest) {
   try {
-    const removed = await removeSampleData()
+    let action = "remove-sample"
+    try {
+      const body = await req.json()
+      action = body.action || "remove-sample"
+    } catch {
+      // bodyなしの場合はデフォルトの remove-sample
+    }
+
+    let removed = 0
+    let message = ""
+
+    switch (action) {
+      case "remove-unverified":
+        removed = await removeUnverifiedNews()
+        message = `URL未確認の${removed}件を削除しました`
+        break
+      case "clear-all":
+        removed = await clearAllNews()
+        message = `全${removed}件のニュースを削除しました`
+        break
+      case "remove-sample":
+      default:
+        removed = await removeSampleData()
+        message = `${removed}件のサンプルデータを削除しました`
+        break
+    }
+
     revalidatePath("/")
-    return NextResponse.json({
-      message: `${removed}件のサンプルデータを削除しました`,
-      removed,
-    })
+    return NextResponse.json({ message, removed, action })
   } catch (error) {
-    console.error("サンプルデータ削除エラー:", error)
-    const msg = error instanceof Error ? error.message : "サンプルデータ削除でエラーが発生しました"
+    console.error("ニュース管理エラー:", error)
+    const msg = error instanceof Error ? error.message : "ニュース管理でエラーが発生しました"
     return NextResponse.json({ error: msg }, { status: 500 })
   }
 }
