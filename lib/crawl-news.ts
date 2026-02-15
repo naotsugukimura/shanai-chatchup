@@ -4,6 +4,11 @@ import { addNews, getKnownUrls, getNextId, setLastCrawled } from "@/lib/news-sto
 import entitiesData from "@/data/entities.json"
 import type { NewsItem } from "@/lib/types"
 
+// 並列実行数の上限
+const MAX_PARALLEL = 3
+// Vercel関数のタイムアウト（余裕を持たせて250秒）
+const TIME_LIMIT_MS = 250_000
+
 interface CrawlResult {
   queriesExecuted: number
   groundingUrlsFound: number
@@ -49,9 +54,7 @@ function isSpecificArticleUrl(url: string): boolean {
   try {
     const u = new URL(url)
     const path = u.pathname
-    // パスが / のみ、または /ja/ 等の短いパスはトップページ
     if (path === "/" || /^\/[a-z]{2}\/?$/.test(path)) return false
-    // パスにスラッシュ区切りが2つ以上あれば記事ページの可能性が高い
     const segments = path.split("/").filter(Boolean)
     return segments.length >= 2 || /\d/.test(path) || path.includes("article") || path.includes("news") || path.includes("press")
   } catch {
@@ -60,8 +63,34 @@ function isSpecificArticleUrl(url: string): boolean {
 }
 
 /**
+ * 配列をN個ずつの並列バッチで実行
+ */
+async function runInParallelBatches<T, R>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T) => Promise<R>
+): Promise<{ results: R[]; errors: string[] }> {
+  const results: R[] = []
+  const errors: string[] = []
+
+  for (let i = 0; i < items.length; i += concurrency) {
+    const batch = items.slice(i, i + concurrency)
+    const settled = await Promise.allSettled(batch.map(fn))
+
+    for (const result of settled) {
+      if (result.status === "fulfilled") {
+        results.push(result.value)
+      } else {
+        errors.push(result.reason?.message || "不明なエラー")
+      }
+    }
+  }
+
+  return { results, errors }
+}
+
+/**
  * Step 1: Gemini + Google Search grounding で検索し、グラウンディングURLのみを収集
- * AIにURLを生成させない — 実在URLだけを取得する
  */
 async function searchForGroundingUrls(
   ai: InstanceType<typeof GoogleGenAI>,
@@ -83,27 +112,21 @@ async function searchForGroundingUrls(
     },
   })
 
-  // グラウンディングメタデータから実在URLを抽出
   const allGroundingUrls = extractGroundingUrls(response)
-  console.log(`[Search] クエリ「${query.slice(0, 30)}...」→ グラウンディング ${allGroundingUrls.length}件`)
+  console.log(`[Search] 「${query.slice(0, 30)}...」→ ${allGroundingUrls.length}件`)
 
-  // フィルタ: 記事ページのみ & 既知URL除外 & 重複除外
   const seen = new Set<string>()
-  const filtered = allGroundingUrls.filter((g) => {
+  return allGroundingUrls.filter((g) => {
     if (!isSpecificArticleUrl(g.uri)) return false
     if (knownUrls.has(g.uri)) return false
     if (seen.has(g.uri)) return false
     seen.add(g.uri)
     return true
   })
-
-  console.log(`[Search] フィルタ後: ${filtered.length}件 (トップページ/既知URL除外)`)
-  return filtered
 }
 
 /**
  * Step 2: 収集したグラウンディングURLをAIに分類・要約させる
- * URLは一切生成させない — 入力として渡したURLをそのまま使う
  */
 async function analyzeArticles(
   ai: InstanceType<typeof GoogleGenAI>,
@@ -154,8 +177,6 @@ ${entityList}
   })
 
   const text = response.text ?? ""
-
-  // JSON部分を抽出
   const jsonMatch = text.match(/\[[\s\S]*\]/)
   if (!jsonMatch) return []
 
@@ -164,7 +185,6 @@ ${entityList}
     if (!Array.isArray(parsed)) return []
 
     const validCategories = ["product", "partnership", "funding", "policy", "market", "technology"]
-    // グラウンディングURLのセット（検証用）
     const groundingUrlSet = new Set(articles.map((a) => a.uri))
 
     return parsed
@@ -175,9 +195,7 @@ ${entityList}
       })
       .map((item: Record<string, unknown>) => {
         const url = String(item.url)
-        // AIが元URLを改変していないか検証
         const urlVerified = groundingUrlSet.has(url)
-        // もしAIがURLを変えてしまった場合、タイトルで元URLを探す
         let finalUrl = url
         if (!urlVerified) {
           const titleMatch = articles.find((a) =>
@@ -200,7 +218,7 @@ ${entityList}
             : [],
           crawledAt: new Date().toISOString(),
           isManual: false,
-          urlVerified: true, // グラウンディングから取得したURLなので常にtrue
+          urlVerified: true,
         }
       })
   } catch {
@@ -211,11 +229,13 @@ ${entityList}
 
 /**
  * 日次クローリングのメイン処理
- * 2段階アーキテクチャ:
- *   Step 1: Gemini+グラウンディングで検索 → 実在URLを収集
- *   Step 2: 収集したURLをAIで分類・要約（URLは生成させない）
+ * 2段階アーキテクチャ（並列化版）:
+ *   Step 1: Gemini+グラウンディングで検索 → 実在URLを収集（3並列）
+ *   Step 2: 収集したURLをAIで分類・要約（3並列バッチ）
+ *   タイムガード: 250秒で途中でも保存して終了
  */
 export async function runDailyCrawl(forceAll = false): Promise<CrawlResult> {
+  const startTime = Date.now()
   const errors: string[] = []
   const timestamp = new Date().toISOString()
   let queriesExecuted = 0
@@ -237,71 +257,90 @@ export async function runDailyCrawl(forceAll = false): Promise<CrawlResult> {
   }
 
   const ai = new GoogleGenAI({ apiKey })
-
-  // 既知URLを取得（重複排除用）
   const knownUrls = await getKnownUrls()
-
-  // クエリグループを取得
   const groups = forceAll ? getAllQueries() : getTodaysQueries()
   const allQueries = groups.flatMap((g) => g.queries)
 
-  // エンティティリストを構築
   const entityList = (entitiesData as { id: string; name: string; nameKana?: string }[])
     .map((e) => `${e.id}: ${e.name}`)
     .join("\n")
 
-  // 全クエリのグラウンディングURLをまず収集
+  // Step 1: 検索を並列実行（3並列）
+  console.log(`[Crawl] Step 1: ${allQueries.length}クエリを${MAX_PARALLEL}並列で検索...`)
+
   const allArticles: GroundingArticle[] = []
   const seenUrls = new Set<string>()
 
-  // Step 1: 全クエリを実行してグラウンディングURLを収集
-  for (const query of allQueries) {
-    try {
-      const articles = await searchForGroundingUrls(ai, query, knownUrls)
-      queriesExecuted++
-      groundingUrlsFound += articles.length
+  const { results: searchResults, errors: searchErrors } = await runInParallelBatches(
+    allQueries,
+    MAX_PARALLEL,
+    (query) => searchForGroundingUrls(ai, query, knownUrls)
+  )
 
-      for (const article of articles) {
-        if (seenUrls.has(article.uri)) {
-          duplicatesSkipped++
-          continue
-        }
-        seenUrls.add(article.uri)
-        allArticles.push(article)
+  for (const err of searchErrors) {
+    errors.push(`検索エラー: ${err}`)
+  }
+
+  for (const articles of searchResults) {
+    queriesExecuted++
+    groundingUrlsFound += articles.length
+
+    for (const article of articles) {
+      if (seenUrls.has(article.uri)) {
+        duplicatesSkipped++
+        continue
       }
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "不明なエラー"
-      errors.push(`検索エラー [${query.slice(0, 30)}...]: ${msg}`)
+      seenUrls.add(article.uri)
+      allArticles.push(article)
     }
   }
 
   articleUrlsFiltered = allArticles.length
-  console.log(`[Crawl] Step 1 完了: ${queriesExecuted}クエリ → ${groundingUrlsFound}グラウンディングURL → ${articleUrlsFiltered}記事URL (重複${duplicatesSkipped}件除外)`)
+  console.log(`[Crawl] Step 1 完了 (${Math.round((Date.now() - startTime) / 1000)}秒): ${groundingUrlsFound} → ${articleUrlsFiltered}記事URL`)
 
-  // Step 2: 収集したURLをバッチ分析（最大10件ずつ）
+  // タイムガード: Step 1だけで時間がかかりすぎた場合
+  if (Date.now() - startTime > TIME_LIMIT_MS) {
+    errors.push("タイムアウト: Step 1完了後に時間切れ")
+    await setLastCrawled(timestamp)
+    return { queriesExecuted, groundingUrlsFound, articleUrlsFiltered, duplicatesSkipped, newArticles: 0, errors, timestamp }
+  }
+
+  // Step 2: バッチ分析を並列実行（10件ずつのバッチを3並列）
   const BATCH_SIZE = 10
+  const batches: GroundingArticle[][] = []
+  for (let i = 0; i < allArticles.length; i += BATCH_SIZE) {
+    batches.push(allArticles.slice(i, i + BATCH_SIZE))
+  }
+
+  console.log(`[Crawl] Step 2: ${batches.length}バッチを${MAX_PARALLEL}並列で分析...`)
+
   const newNewsItems: NewsItem[] = []
 
-  for (let i = 0; i < allArticles.length; i += BATCH_SIZE) {
-    const batch = allArticles.slice(i, i + BATCH_SIZE)
-    try {
-      const results = await analyzeArticles(ai, batch, entityList)
-      console.log(`[Analyze] バッチ${Math.floor(i / BATCH_SIZE) + 1}: ${batch.length}件入力 → ${results.length}件の関連記事`)
+  const { results: analyzeResults, errors: analyzeErrors } = await runInParallelBatches(
+    batches,
+    MAX_PARALLEL,
+    (batch) => analyzeArticles(ai, batch, entityList)
+  )
 
-      for (const item of results) {
-        // 最終重複チェック
-        if (knownUrls.has(item.url)) {
-          duplicatesSkipped++
-          continue
-        }
-        knownUrls.add(item.url)
+  for (const err of analyzeErrors) {
+    errors.push(`分析エラー: ${err}`)
+  }
 
-        const id = await getNextId()
-        newNewsItems.push({ ...item, id })
+  for (const results of analyzeResults) {
+    // タイムガード
+    if (Date.now() - startTime > TIME_LIMIT_MS) {
+      errors.push("タイムアウト: 分析途中で時間切れ（取得済み分は保存）")
+      break
+    }
+
+    for (const item of results) {
+      if (knownUrls.has(item.url)) {
+        duplicatesSkipped++
+        continue
       }
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "不明なエラー"
-      errors.push(`分析エラー [バッチ${Math.floor(i / BATCH_SIZE) + 1}]: ${msg}`)
+      knownUrls.add(item.url)
+      const id = await getNextId()
+      newNewsItems.push({ ...item, id })
     }
   }
 
@@ -317,7 +356,8 @@ export async function runDailyCrawl(forceAll = false): Promise<CrawlResult> {
 
   await setLastCrawled(timestamp)
 
-  console.log(`[Crawl] 完了: ${newNewsItems.length}件の新規記事を保存`)
+  const elapsed = Math.round((Date.now() - startTime) / 1000)
+  console.log(`[Crawl] 完了 (${elapsed}秒): ${newNewsItems.length}件保存`)
 
   return {
     queriesExecuted,
