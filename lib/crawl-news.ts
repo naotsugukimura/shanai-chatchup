@@ -1,15 +1,8 @@
-import { getGeminiModel } from "@/lib/gemini"
+import { GoogleGenAI } from "@google/genai"
 import { getTodaysQueries, getAllQueries } from "@/lib/search-queries"
 import { addNews, getKnownUrls, getNextId, setLastCrawled } from "@/lib/news-store"
 import entitiesData from "@/data/entities.json"
 import type { NewsItem } from "@/lib/types"
-
-interface GoogleSearchResult {
-  title: string
-  link: string
-  snippet: string
-  displayLink: string
-}
 
 interface CrawlResult {
   queriesExecuted: number
@@ -21,86 +14,46 @@ interface CrawlResult {
 }
 
 /**
- * Google Custom Search API でニュースを検索
+ * Gemini + Google Search grounding でニュースを検索・分析
+ * Custom Search JSON API の代替（新規利用不可のため）
  */
-async function searchGoogle(query: string): Promise<GoogleSearchResult[]> {
-  const apiKey = process.env.GOOGLE_API_KEY
-  const cseId = process.env.GOOGLE_CSE_ID
-
-  if (!apiKey || !cseId) {
-    throw new Error("GOOGLE_API_KEY または GOOGLE_CSE_ID が未設定です")
+async function searchAndAnalyze(
+  query: string,
+  entityList: string,
+  knownUrls: Set<string>
+): Promise<{ results: Omit<NewsItem, "id">[]; rawCount: number; dupCount: number }> {
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY が未設定です")
   }
 
-  const params = new URLSearchParams({
-    key: apiKey,
-    cx: cseId,
-    q: query,
-    num: "5",
-    dateRestrict: "d3",  // 直近3日以内
-    lr: "lang_ja",       // 日本語のみ
-    gl: "jp",            // 日本リージョン
-  })
-
-  const res = await fetch(
-    `https://www.googleapis.com/customsearch/v1?${params.toString()}`
-  )
-
-  if (!res.ok) {
-    const errorText = await res.text()
-    throw new Error(`Google Search API エラー (${res.status}): ${errorText}`)
-  }
-
-  const data = await res.json()
-  if (!data.items) return []
-
-  return data.items.map((item: { title: string; link: string; snippet: string; displayLink: string }) => ({
-    title: item.title,
-    link: item.link,
-    snippet: item.snippet || "",
-    displayLink: item.displayLink || "",
-  }))
-}
-
-/**
- * Gemini で検索結果を分析し、NewsItem形式に変換
- */
-async function analyzeWithGemini(
-  results: GoogleSearchResult[]
-): Promise<Omit<NewsItem, "id">[]> {
-  if (results.length === 0) return []
-
-  const model = getGeminiModel()
-
-  // エンティティリストを構築
-  const entityList = (entitiesData as { id: string; name: string; nameKana?: string }[])
-    .map((e) => `${e.id}: ${e.name}`)
-    .join("\n")
-
-  const articlesText = results
-    .map(
-      (r, i) =>
-        `[${i + 1}] タイトル: ${r.title}\nURL: ${r.link}\nサイト: ${r.displayLink}\n抜粋: ${r.snippet}`
-    )
-    .join("\n\n")
+  const ai = new GoogleGenAI({ apiKey })
 
   const prompt = `あなたは障害福祉業界のニュース分析AIです。
-以下のニュース検索結果を分析し、各記事をJSON配列で返してください。
+以下の検索クエリに基づいてGoogle検索を行い、障害福祉・障害者雇用・就労支援に関連するニュース記事を見つけて分析してください。
+
+## 検索クエリ
+${query}
 
 ## ルール
-- 障害福祉・障害者雇用・就労支援に無関係な記事は除外（空配列にする）
+- 直近3日以内の日本語ニュース記事のみ対象
+- 障害福祉・障害者雇用・就労支援に無関係な記事は除外
+- 最大5件まで
 - categoryは必ず以下の6つのいずれか: product, partnership, funding, policy, market, technology
 - summaryは100文字以内の日本語
 - relatedEntityIdsは以下のエンティティリストから該当するものを選択（該当なしなら空配列）
-- dateは記事の公開日をYYYY-MM-DD形式で推定（不明なら今日の日付）
-- sourceはサイト名（ドメインから推定）
+- dateは記事の公開日をYYYY-MM-DD形式（不明なら今日の日付: ${new Date().toISOString().slice(0, 10)}）
+- sourceはサイト名
+
+## 除外するURL（既に取得済み）
+以下のURLはスキップしてください:
+${[...knownUrls].slice(0, 50).join("\n") || "(なし)"}
 
 ## エンティティリスト
 ${entityList}
 
-## 記事リスト
-${articlesText}
-
 ## 出力形式（JSON配列のみ返してください、他のテキストは不要）
+該当記事がない場合は空配列 [] を返してください。
 [
   {
     "title": "記事タイトル",
@@ -109,28 +62,49 @@ ${articlesText}
     "date": "YYYY-MM-DD",
     "category": "policy",
     "summary": "100文字以内の要約",
-    "relatedEntityIds": ["L1-001"]
+    "relatedEntityIds": ["L1-001"],
+    "rawResultCount": 5
   }
-]`
+]
 
-  const result = await model.generateContent(prompt)
-  const text = result.response.text()
+rawResultCountは最初のオブジェクトにだけ含め、Google検索で見つかった総記事数を記載してください。`
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: prompt,
+    config: {
+      tools: [{ googleSearch: {} }],
+    },
+  })
+
+  const text = response.text ?? ""
 
   // JSON部分を抽出
   const jsonMatch = text.match(/\[[\s\S]*\]/)
-  if (!jsonMatch) return []
+  if (!jsonMatch) return { results: [], rawCount: 0, dupCount: 0 }
 
   try {
     const parsed = JSON.parse(jsonMatch[0])
-    if (!Array.isArray(parsed)) return []
+    if (!Array.isArray(parsed)) return { results: [], rawCount: 0, dupCount: 0 }
 
-    // バリデーション
+    // rawResultCountを取得
+    const rawCount = parsed[0]?.rawResultCount ?? parsed.length
+
+    // バリデーション & 重複排除
     const validCategories = ["product", "partnership", "funding", "policy", "market", "technology"]
-    return parsed
-      .filter(
-        (item: Record<string, unknown>) =>
-          item.title && item.url && item.summary && validCategories.includes(item.category as string)
-      )
+    let dupCount = 0
+
+    const results = parsed
+      .filter((item: Record<string, unknown>) => {
+        if (!item.title || !item.url || !item.summary || !validCategories.includes(item.category as string)) {
+          return false
+        }
+        if (knownUrls.has(String(item.url))) {
+          dupCount++
+          return false
+        }
+        return true
+      })
       .map((item: Record<string, unknown>) => ({
         title: String(item.title),
         url: String(item.url),
@@ -144,9 +118,11 @@ ${articlesText}
         crawledAt: new Date().toISOString(),
         isManual: false,
       }))
+
+    return { results, rawCount, dupCount }
   } catch {
     console.error("Gemini応答のJSONパースに失敗:", text.slice(0, 200))
-    return []
+    return { results: [], rawCount: 0, dupCount: 0 }
   }
 }
 
@@ -167,61 +143,39 @@ export async function runDailyCrawl(forceAll = false): Promise<CrawlResult> {
   const groups = forceAll ? getAllQueries() : getTodaysQueries()
   const allQueries = groups.flatMap((g) => g.queries)
 
-  // 全検索結果を収集
-  const allSearchResults: GoogleSearchResult[] = []
+  // エンティティリストを構築
+  const entityList = (entitiesData as { id: string; name: string; nameKana?: string }[])
+    .map((e) => `${e.id}: ${e.name}`)
+    .join("\n")
+
+  // 収集した全URLを追跡（クエリ間の重複排除）
+  const seenUrls = new Set<string>()
+
+  // 全ニュースアイテム
+  const newNewsItems: NewsItem[] = []
 
   for (const query of allQueries) {
     try {
-      const results = await searchGoogle(query)
+      const { results, rawCount, dupCount } = await searchAndAnalyze(query, entityList, knownUrls)
       queriesExecuted++
-      rawResults += results.length
-      allSearchResults.push(...results)
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "不明なエラー"
-      errors.push(`検索エラー [${query.slice(0, 30)}...]: ${msg}`)
-    }
-  }
+      rawResults += rawCount
+      duplicatesSkipped += dupCount
 
-  // URL重複排除（検索結果間 + 既存データ）
-  const uniqueResults: GoogleSearchResult[] = []
-  const seenUrls = new Set<string>()
+      for (const item of results) {
+        // クエリ間の重複排除
+        if (seenUrls.has(item.url)) {
+          duplicatesSkipped++
+          continue
+        }
+        seenUrls.add(item.url)
+        knownUrls.add(item.url) // 次のクエリでも排除
 
-  for (const result of allSearchResults) {
-    if (knownUrls.has(result.link) || seenUrls.has(result.link)) {
-      duplicatesSkipped++
-      continue
-    }
-    seenUrls.add(result.link)
-    uniqueResults.push(result)
-  }
-
-  if (uniqueResults.length === 0) {
-    await setLastCrawled(timestamp)
-    return {
-      queriesExecuted,
-      rawResults,
-      duplicatesSkipped,
-      newArticles: 0,
-      errors,
-      timestamp,
-    }
-  }
-
-  // Gemini で分析（5件ずつバッチ）
-  const newNewsItems: NewsItem[] = []
-  const batchSize = 5
-
-  for (let i = 0; i < uniqueResults.length; i += batchSize) {
-    const batch = uniqueResults.slice(i, i + batchSize)
-    try {
-      const analyzed = await analyzeWithGemini(batch)
-      for (const item of analyzed) {
         const id = await getNextId()
         newNewsItems.push({ ...item, id })
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : "不明なエラー"
-      errors.push(`Gemini分析エラー (バッチ${Math.floor(i / batchSize) + 1}): ${msg}`)
+      errors.push(`検索・分析エラー [${query.slice(0, 30)}...]: ${msg}`)
     }
   }
 
