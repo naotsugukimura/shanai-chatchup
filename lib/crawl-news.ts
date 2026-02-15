@@ -54,35 +54,36 @@ function isSpecificArticleUrl(url: string): boolean {
 }
 
 /**
- * GeminiのJSON出力URLをgroundingのソースURLで補正
+ * GeminiのJSON出力URLをgroundingのソースURLで補正し、検証フラグを付与
  */
-function correctUrls(
-  items: { title: string; url: string; [key: string]: unknown }[],
+function correctAndVerifyUrls(
+  items: { title: string; url: string; urlVerified?: boolean; [key: string]: unknown }[],
   groundingUrls: { uri: string; title: string }[]
 ): void {
-  // 具体的な記事URLだけ抽出
+  const groundingUrlSet = new Set(groundingUrls.map((g) => g.uri))
   const articleUrls = groundingUrls.filter((g) => isSpecificArticleUrl(g.uri))
 
   for (const item of items) {
-    // item.urlが既に具体的な記事URLならそのまま
-    if (isSpecificArticleUrl(item.url)) continue
+    // AI生成URLがgroundingに完全一致 → 検証済み
+    if (groundingUrlSet.has(item.url)) {
+      item.urlVerified = true
+      continue
+    }
 
     // タイトルマッチでgroundingから補正
     const titleLower = item.title.toLowerCase()
     const match = articleUrls.find((g) => {
       const gTitleLower = g.title.toLowerCase()
-      // タイトルの一部が一致
       return (
         gTitleLower.includes(titleLower.slice(0, 15)) ||
-        titleLower.includes(gTitleLower.slice(0, 15)) ||
-        // ドメインが一致
-        g.uri.includes(new URL(item.url).hostname)
+        titleLower.includes(gTitleLower.slice(0, 15))
       )
     })
 
     if (match) {
       item.url = match.uri
-    } else if (articleUrls.length > 0) {
+      item.urlVerified = true
+    } else {
       // ドメインマッチを試みる
       try {
         const itemDomain = new URL(item.url).hostname
@@ -91,9 +92,12 @@ function correctUrls(
         })
         if (domainMatch) {
           item.url = domainMatch.uri
+          item.urlVerified = true
+        } else {
+          item.urlVerified = false
         }
       } catch {
-        // URLパース失敗は無視
+        item.urlVerified = false
       }
     }
   }
@@ -182,7 +186,7 @@ rawResultCountは最初のオブジェクトにだけ含め、Google検索で見
     const rawCount = parsed[0]?.rawResultCount ?? parsed.length
 
     // GeminiのURLをgroundingソースで補正
-    correctUrls(parsed, groundingUrls)
+    correctAndVerifyUrls(parsed, groundingUrls)
 
     // バリデーション & 重複排除
     const validCategories = ["product", "partnership", "funding", "policy", "market", "technology"]
@@ -211,6 +215,7 @@ rawResultCountは最初のオブジェクトにだけ含め、Google検索で見
           : [],
         crawledAt: new Date().toISOString(),
         isManual: false,
+        urlVerified: item.urlVerified === true,
       }))
 
     return { results, rawCount, dupCount }

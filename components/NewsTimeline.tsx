@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SearchBar } from "./SearchBar"
+import { NewsDetailSheet } from "./NewsDetailSheet"
 import type { NewsItem, Entity } from "@/lib/types"
 import { NEWS_CATEGORIES } from "@/lib/constants"
 import { createIdMap } from "@/lib/utils"
@@ -40,6 +41,7 @@ function isNewArticle(crawledAt: string | undefined): boolean {
 export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps) {
   const [search, setSearch] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedItem, setSelectedItem] = useState<NewsItem | null>(null)
   const [isCrawling, setIsCrawling] = useState(false)
   const [crawlResult, setCrawlResult] = useState<string | null>(null)
 
@@ -231,18 +233,22 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
                       )}
                     </div>
 
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-bold text-sm hover:text-blue-600 hover:underline block mb-1.5"
+                    <button
+                      onClick={() => setSelectedItem(item)}
+                      className="font-bold text-sm hover:text-blue-600 hover:underline block mb-1.5 text-left cursor-pointer"
                     >
                       {item.title}
-                    </a>
+                    </button>
 
                     <p className="text-xs text-muted-foreground mb-2">
                       {item.summary}
                     </p>
+
+                    {item.urlVerified === false && !item.isManual && (
+                      <span className="text-[9px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
+                        URL未確認
+                      </span>
+                    )}
 
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="text-[10px] text-muted-foreground">関連:</span>
@@ -287,6 +293,12 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
           <p className="text-[10px] text-muted-foreground mt-1">{crawlResult}</p>
         )}
       </div>
+
+      <NewsDetailSheet
+        selectedItem={selectedItem}
+        entityMap={entityMap}
+        onClose={() => setSelectedItem(null)}
+      />
     </div>
   )
 }

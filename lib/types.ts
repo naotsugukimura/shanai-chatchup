@@ -88,6 +88,7 @@ export interface NewsItem {
   summary: string;
   crawledAt?: string;   // ISO8601、クロール日時（自動取得の場合）
   isManual?: boolean;   // true = 手動登録（旧news.jsonのデータ）
+  urlVerified?: boolean; // true = grounding metadataで確認済みURL
 }
 
 export interface SupplyChainNode {
