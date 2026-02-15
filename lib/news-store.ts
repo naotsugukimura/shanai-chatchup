@@ -124,6 +124,30 @@ export async function getLastCrawled(): Promise<string | null> {
 }
 
 /**
+ * ニュース分析キャッシュを取得
+ */
+export async function getAnalysisCache(newsId: string, mode: string): Promise<string | null> {
+  if (!redis) return null
+  try {
+    return redis.get<string>(`news:analysis:${mode}:${newsId}`)
+  } catch {
+    return null
+  }
+}
+
+/**
+ * ニュース分析キャッシュを保存（30日間有効）
+ */
+export async function setAnalysisCache(newsId: string, mode: string, analysis: string): Promise<void> {
+  if (!redis) return
+  try {
+    await redis.set(`news:analysis:${mode}:${newsId}`, analysis, { ex: 30 * 24 * 60 * 60 })
+  } catch {
+    // キャッシュ保存失敗は無視
+  }
+}
+
+/**
  * サンプルデータを削除（example.comやisManual=trueのデータを除去）
  */
 export async function removeSampleData(): Promise<number> {

@@ -1,12 +1,21 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getGeminiModel, getGeminiFlashModel } from "@/lib/gemini"
+import { getAnalysisCache, setAnalysisCache } from "@/lib/news-store"
 
 export async function POST(req: NextRequest) {
   try {
-    const { title, summary, source, date, category, relatedEntities, mode = "quick" } = await req.json()
+    const { title, summary, source, date, category, relatedEntities, mode = "quick", newsId } = await req.json()
 
     if (!title || !summary) {
       return NextResponse.json({ error: "title and summary are required" }, { status: 400 })
+    }
+
+    // KVキャッシュを確認
+    if (newsId) {
+      const cached = await getAnalysisCache(newsId, mode)
+      if (cached) {
+        return NextResponse.json({ analysis: cached, mode, cached: true })
+      }
     }
 
     const model = mode === "deep" ? getGeminiModel() : getGeminiFlashModel()
@@ -59,6 +68,11 @@ SaaS/人材紹介/メディアの各事業にどう影響するか。影響が�
 
     const result = await model.generateContent(prompt)
     const response = result.response.text()
+
+    // KVにキャッシュ保存
+    if (newsId) {
+      await setAnalysisCache(newsId, mode, response)
+    }
 
     return NextResponse.json({
       analysis: response,

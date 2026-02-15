@@ -64,7 +64,7 @@ export function NewsDetailSheet({ selectedItem, entityMap, onClose }: NewsDetail
   const [error, setError] = useState<string | null>(null)
   const cacheRef = useRef<Map<string, AnalysisCache>>(new Map())
 
-  const buildBody = useCallback((item: NewsItem) => {
+  const buildBody = useCallback((item: NewsItem, mode: string) => {
     const relatedEntities = item.relatedEntityIds
       .map((id) => entityMap[id]?.name)
       .filter(Boolean)
@@ -77,6 +77,8 @@ export function NewsDetailSheet({ selectedItem, entityMap, onClose }: NewsDetail
       date: item.date,
       category: cat?.label || item.category,
       relatedEntities: relatedEntities || undefined,
+      newsId: item.id,
+      mode,
     }
   }, [entityMap])
 
@@ -95,7 +97,7 @@ export function NewsDetailSheet({ selectedItem, entityMap, onClose }: NewsDetail
       const res = await fetch("/api/analyze-news", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...buildBody(item), mode: "quick" }),
+        body: JSON.stringify(buildBody(item, "quick")),
       })
       const data = await res.json()
       if (data.error) {
@@ -125,7 +127,7 @@ export function NewsDetailSheet({ selectedItem, entityMap, onClose }: NewsDetail
       const res = await fetch("/api/analyze-news", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...buildBody(item), mode: "deep" }),
+        body: JSON.stringify(buildBody(item, "deep")),
       })
       const data = await res.json()
       if (!data.error) {
@@ -155,8 +157,12 @@ export function NewsDetailSheet({ selectedItem, entityMap, onClose }: NewsDetail
 
   return (
     <Sheet open={!!selectedItem} onOpenChange={(open) => { if (!open) onClose() }}>
-      <SheetContent side="right" className="w-full sm:max-w-md md:max-w-lg p-0 flex flex-col h-full">
-        <SheetHeader className="p-4 pb-2 shrink-0">
+      <SheetContent
+        side="right"
+        className="!w-full sm:!max-w-md md:!max-w-lg p-0 flex flex-col h-full"
+      >
+        {/* Header */}
+        <SheetHeader className="px-3 sm:px-4 pt-3 sm:pt-4 pb-2 shrink-0">
           <div className="flex items-center gap-1.5 flex-wrap mb-1">
             <Badge
               className="text-[10px] px-1.5 py-0 text-white border-0"
@@ -168,20 +174,20 @@ export function NewsDetailSheet({ selectedItem, entityMap, onClose }: NewsDetail
               {selectedItem.date} / {selectedItem.source}
             </span>
           </div>
-          <SheetTitle className="text-sm leading-snug">
+          <SheetTitle className="text-sm leading-snug pr-6">
             {selectedItem.title}
           </SheetTitle>
           <SheetDescription className="sr-only">ニュース詳細と分析</SheetDescription>
         </SheetHeader>
 
-        {/* Article Link - prominent placement */}
-        <div className="px-4 pb-2 shrink-0">
+        {/* Article Link */}
+        <div className="px-3 sm:px-4 pb-2 shrink-0">
           {selectedItem.urlVerified === false ? (
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 text-xs"
+                className="flex-1 text-xs border-amber-300 text-amber-700 hover:bg-amber-50"
                 onClick={() => window.open(
                   `https://www.google.com/search?q=${encodeURIComponent(selectedItem.title)}`,
                   "_blank"
@@ -189,24 +195,24 @@ export function NewsDetailSheet({ selectedItem, entityMap, onClose }: NewsDetail
               >
                 Googleで記事を検索
               </Button>
-              <span className="text-[9px] text-amber-600 self-center">URL未確認</span>
+              <span className="text-[9px] text-amber-600 self-center shrink-0">URL未確認</span>
             </div>
           ) : (
             <Button
               size="sm"
-              className="w-full bg-[#1a2744] hover:bg-[#2a3754] text-white text-xs"
+              className="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-medium"
               onClick={() => window.open(selectedItem.url, "_blank")}
             >
-              記事を読む
+              元記事を読む
             </Button>
           )}
         </div>
 
         {/* Scrollable content */}
         <ScrollArea className="flex-1 min-h-0">
-          <div className="px-4 pb-4">
+          <div className="px-3 sm:px-4 pb-4">
             {/* Summary */}
-            <div className="bg-muted/50 rounded-lg p-3 mb-3">
+            <div className="bg-muted/50 rounded-lg p-2.5 sm:p-3 mb-3">
               <p className="text-[10px] text-muted-foreground mb-1">概要</p>
               <p className="text-xs leading-relaxed">{selectedItem.summary}</p>
             </div>
