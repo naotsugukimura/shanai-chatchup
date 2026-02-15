@@ -12,7 +12,7 @@ export async function POST() {
     console.log("[Manual] ニュースクローリング開始（全クエリ実行）...")
     const result = await runDailyCrawl(true)
     console.log(
-      `[Manual] 完了: ${result.queriesExecuted}クエリ, ${result.newArticles}件追加`
+      `[Manual] 完了: ${result.queriesExecuted}クエリ, グラウンディング${result.groundingUrlsFound}件 → 記事${result.articleUrlsFiltered}件 → ${result.newArticles}件追加`
     )
 
     // ISRキャッシュを無効化してトップページを再生成

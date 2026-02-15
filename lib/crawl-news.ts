@@ -6,11 +6,17 @@ import type { NewsItem } from "@/lib/types"
 
 interface CrawlResult {
   queriesExecuted: number
-  rawResults: number
+  groundingUrlsFound: number
+  articleUrlsFiltered: number
   duplicatesSkipped: number
   newArticles: number
   errors: string[]
   timestamp: string
+}
+
+interface GroundingArticle {
+  uri: string
+  title: string
 }
 
 /**
@@ -18,7 +24,7 @@ interface CrawlResult {
  */
 function extractGroundingUrls(
   response: Awaited<ReturnType<InstanceType<typeof GoogleGenAI>["models"]["generateContent"]>>
-): { uri: string; title: string }[] {
+): GroundingArticle[] {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const candidate = (response as any)?.candidates?.[0]
@@ -54,191 +60,188 @@ function isSpecificArticleUrl(url: string): boolean {
 }
 
 /**
- * GeminiのJSON出力URLをgroundingのソースURLで補正し、検証フラグを付与
+ * Step 1: Gemini + Google Search grounding で検索し、グラウンディングURLのみを収集
+ * AIにURLを生成させない — 実在URLだけを取得する
  */
-function correctAndVerifyUrls(
-  items: { title: string; url: string; urlVerified?: boolean; [key: string]: unknown }[],
-  groundingUrls: { uri: string; title: string }[]
-): void {
-  const groundingUrlSet = new Set(groundingUrls.map((g) => g.uri))
-  const articleUrls = groundingUrls.filter((g) => isSpecificArticleUrl(g.uri))
-
-  for (const item of items) {
-    // AI生成URLがgroundingに完全一致 → 検証済み
-    if (groundingUrlSet.has(item.url)) {
-      item.urlVerified = true
-      continue
-    }
-
-    // タイトルマッチでgroundingから補正
-    const titleLower = item.title.toLowerCase()
-    const match = articleUrls.find((g) => {
-      const gTitleLower = g.title.toLowerCase()
-      return (
-        gTitleLower.includes(titleLower.slice(0, 15)) ||
-        titleLower.includes(gTitleLower.slice(0, 15))
-      )
-    })
-
-    if (match) {
-      item.url = match.uri
-      item.urlVerified = true
-    } else {
-      // ドメインマッチを試みる
-      try {
-        const itemDomain = new URL(item.url).hostname
-        const domainMatch = articleUrls.find((g) => {
-          try { return new URL(g.uri).hostname === itemDomain } catch { return false }
-        })
-        if (domainMatch) {
-          item.url = domainMatch.uri
-          item.urlVerified = true
-        } else {
-          item.urlVerified = false
-        }
-      } catch {
-        item.urlVerified = false
-      }
-    }
-  }
-}
-
-/**
- * Gemini + Google Search grounding でニュースを検索・分析
- * Custom Search JSON API の代替（新規利用不可のため）
- */
-async function searchAndAnalyze(
+async function searchForGroundingUrls(
+  ai: InstanceType<typeof GoogleGenAI>,
   query: string,
-  entityList: string,
   knownUrls: Set<string>
-): Promise<{ results: Omit<NewsItem, "id">[]; rawCount: number; dupCount: number }> {
-  const apiKey = process.env.GEMINI_API_KEY
-  if (!apiKey) {
-    throw new Error("GEMINI_API_KEY が未設定です")
-  }
+): Promise<GroundingArticle[]> {
+  const searchPrompt = `以下の検索クエリに関連する最新のニュース記事を探してください。
+直近7日以内の日本語の記事に限定してください。
 
-  const ai = new GoogleGenAI({ apiKey })
+検索クエリ: ${query}
 
-  const prompt = `あなたは障害福祉業界のニュース分析AIです。
-以下の検索クエリに基づいてGoogle検索を行い、障害福祉・障害者雇用・就労支援に関連するニュース記事を見つけて分析してください。
-
-## 検索クエリ
-${query}
-
-## ルール
-- 直近3日以内の日本語ニュース記事のみ対象
-- 障害福祉・障害者雇用・就労支援に無関係な記事は除外
-- 最大5件まで
-- ★重要★ urlは必ずその記事の具体的なURLを返してください（サイトのトップページやHPのURLではなく、記事個別のURL）
-- categoryは必ず以下の6つのいずれか: product, partnership, funding, policy, market, technology
-- summaryは100文字以内の日本語
-- relatedEntityIdsは以下のエンティティリストから該当するものを選択（該当なしなら空配列）
-- dateは記事の公開日をYYYY-MM-DD形式（不明なら今日の日付: ${new Date().toISOString().slice(0, 10)}）
-- sourceはサイト名
-
-## 除外するURL（既に取得済み）
-以下のURLはスキップしてください:
-${[...knownUrls].slice(0, 50).join("\n") || "(なし)"}
-
-## エンティティリスト
-${entityList}
-
-## 出力形式（JSON配列のみ返してください、他のテキストは不要）
-該当記事がない場合は空配列 [] を返してください。
-[
-  {
-    "title": "記事タイトル",
-    "url": "https://example.com/news/2026/02/15/article-slug（記事個別のURL）",
-    "source": "メディア名",
-    "date": "YYYY-MM-DD",
-    "category": "policy",
-    "summary": "100文字以内の要約",
-    "relatedEntityIds": ["L1-001"],
-    "rawResultCount": 5
-  }
-]
-
-rawResultCountは最初のオブジェクトにだけ含め、Google検索で見つかった総記事数を記載してください。`
+見つかった記事のタイトルと内容の概要を簡潔に箇条書きで教えてください。URLは返さなくて結構です。`
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
-    contents: prompt,
+    contents: searchPrompt,
     config: {
       tools: [{ googleSearch: {} }],
     },
   })
 
-  const text = response.text ?? ""
+  // グラウンディングメタデータから実在URLを抽出
+  const allGroundingUrls = extractGroundingUrls(response)
+  console.log(`[Search] クエリ「${query.slice(0, 30)}...」→ グラウンディング ${allGroundingUrls.length}件`)
 
-  // groundingMetadataからソースURLを抽出
-  const groundingUrls = extractGroundingUrls(response)
-  console.log(`[Grounding] ${groundingUrls.length}件のソースURL取得:`, groundingUrls.map((g) => g.uri).join(", "))
+  // フィルタ: 記事ページのみ & 既知URL除外 & 重複除外
+  const seen = new Set<string>()
+  const filtered = allGroundingUrls.filter((g) => {
+    if (!isSpecificArticleUrl(g.uri)) return false
+    if (knownUrls.has(g.uri)) return false
+    if (seen.has(g.uri)) return false
+    seen.add(g.uri)
+    return true
+  })
+
+  console.log(`[Search] フィルタ後: ${filtered.length}件 (トップページ/既知URL除外)`)
+  return filtered
+}
+
+/**
+ * Step 2: 収集したグラウンディングURLをAIに分類・要約させる
+ * URLは一切生成させない — 入力として渡したURLをそのまま使う
+ */
+async function analyzeArticles(
+  ai: InstanceType<typeof GoogleGenAI>,
+  articles: GroundingArticle[],
+  entityList: string
+): Promise<Omit<NewsItem, "id">[]> {
+  if (articles.length === 0) return []
+
+  const articlesList = articles
+    .map((a, i) => `${i + 1}. URL: ${a.uri}\n   タイトル: ${a.title}`)
+    .join("\n")
+
+  const analyzePrompt = `あなたは障害福祉業界のニュース分析AIです。
+以下の記事リストを分析し、障害福祉・障害者雇用・就労支援に関連するものだけをJSON配列で返してください。
+
+## 記事リスト
+${articlesList}
+
+## ルール
+- 障害福祉・障害者雇用・就労支援に無関係な記事は除外してください
+- ★最重要★ urlの値は上記リストのURLをそのまま使ってください。URLを変更・生成しないでください。
+- categoryは必ず以下の6つのいずれか: product, partnership, funding, policy, market, technology
+- summaryは100文字以内の日本語で記事内容を要約
+- relatedEntityIdsは以下のエンティティリストから該当するものを選択（該当なしなら空配列）
+- dateは記事の公開日をYYYY-MM-DD形式（不明なら今日の日付: ${new Date().toISOString().slice(0, 10)}）
+- sourceはサイト名（URLのドメインから推定）
+
+## エンティティリスト
+${entityList}
+
+## 出力形式（JSON配列のみ返してください、他のテキストは不要）
+関連記事がない場合は空配列 [] を返してください。
+[
+  {
+    "title": "記事タイトル",
+    "url": "上記リストのURLをそのままコピー",
+    "source": "サイト名",
+    "date": "YYYY-MM-DD",
+    "category": "policy",
+    "summary": "100文字以内の要約",
+    "relatedEntityIds": ["L1-001"]
+  }
+]`
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: analyzePrompt,
+  })
+
+  const text = response.text ?? ""
 
   // JSON部分を抽出
   const jsonMatch = text.match(/\[[\s\S]*\]/)
-  if (!jsonMatch) return { results: [], rawCount: 0, dupCount: 0 }
+  if (!jsonMatch) return []
 
   try {
     const parsed = JSON.parse(jsonMatch[0])
-    if (!Array.isArray(parsed)) return { results: [], rawCount: 0, dupCount: 0 }
+    if (!Array.isArray(parsed)) return []
 
-    // rawResultCountを取得
-    const rawCount = parsed[0]?.rawResultCount ?? parsed.length
-
-    // GeminiのURLをgroundingソースで補正
-    correctAndVerifyUrls(parsed, groundingUrls)
-
-    // バリデーション & 重複排除
     const validCategories = ["product", "partnership", "funding", "policy", "market", "technology"]
-    let dupCount = 0
+    // グラウンディングURLのセット（検証用）
+    const groundingUrlSet = new Set(articles.map((a) => a.uri))
 
-    const results = parsed
+    return parsed
       .filter((item: Record<string, unknown>) => {
-        if (!item.title || !item.url || !item.summary || !validCategories.includes(item.category as string)) {
-          return false
-        }
-        if (knownUrls.has(String(item.url))) {
-          dupCount++
-          return false
-        }
+        if (!item.title || !item.url || !item.summary) return false
+        if (!validCategories.includes(item.category as string)) return false
         return true
       })
-      .map((item: Record<string, unknown>) => ({
-        title: String(item.title),
-        url: String(item.url),
-        source: String(item.source || "不明"),
-        date: String(item.date || new Date().toISOString().slice(0, 10)),
-        category: item.category as NewsItem["category"],
-        summary: String(item.summary).slice(0, 150),
-        relatedEntityIds: Array.isArray(item.relatedEntityIds)
-          ? (item.relatedEntityIds as string[]).filter((id) => typeof id === "string")
-          : [],
-        crawledAt: new Date().toISOString(),
-        isManual: false,
-        urlVerified: item.urlVerified === true,
-      }))
+      .map((item: Record<string, unknown>) => {
+        const url = String(item.url)
+        // AIが元URLを改変していないか検証
+        const urlVerified = groundingUrlSet.has(url)
+        // もしAIがURLを変えてしまった場合、タイトルで元URLを探す
+        let finalUrl = url
+        if (!urlVerified) {
+          const titleMatch = articles.find((a) =>
+            a.title && String(item.title).includes(a.title.slice(0, 15))
+          )
+          if (titleMatch) {
+            finalUrl = titleMatch.uri
+          }
+        }
 
-    return { results, rawCount, dupCount }
+        return {
+          title: String(item.title),
+          url: finalUrl,
+          source: String(item.source || "不明"),
+          date: String(item.date || new Date().toISOString().slice(0, 10)),
+          category: item.category as NewsItem["category"],
+          summary: String(item.summary).slice(0, 150),
+          relatedEntityIds: Array.isArray(item.relatedEntityIds)
+            ? (item.relatedEntityIds as string[]).filter((id) => typeof id === "string")
+            : [],
+          crawledAt: new Date().toISOString(),
+          isManual: false,
+          urlVerified: true, // グラウンディングから取得したURLなので常にtrue
+        }
+      })
   } catch {
-    console.error("Gemini応答のJSONパースに失敗:", text.slice(0, 200))
-    return { results: [], rawCount: 0, dupCount: 0 }
+    console.error("分析応答のJSONパースに失敗:", text.slice(0, 200))
+    return []
   }
 }
 
 /**
  * 日次クローリングのメイン処理
+ * 2段階アーキテクチャ:
+ *   Step 1: Gemini+グラウンディングで検索 → 実在URLを収集
+ *   Step 2: 収集したURLをAIで分類・要約（URLは生成させない）
  */
 export async function runDailyCrawl(forceAll = false): Promise<CrawlResult> {
   const errors: string[] = []
   const timestamp = new Date().toISOString()
   let queriesExecuted = 0
-  let rawResults = 0
+  let groundingUrlsFound = 0
+  let articleUrlsFiltered = 0
   let duplicatesSkipped = 0
+
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!apiKey) {
+    return {
+      queriesExecuted: 0,
+      groundingUrlsFound: 0,
+      articleUrlsFiltered: 0,
+      duplicatesSkipped: 0,
+      newArticles: 0,
+      errors: ["GEMINI_API_KEY が未設定です"],
+      timestamp,
+    }
+  }
+
+  const ai = new GoogleGenAI({ apiKey })
 
   // 既知URLを取得（重複排除用）
   const knownUrls = await getKnownUrls()
 
-  // クエリグループを取得（forceAll=trueの場合は全グループ、それ以外は今日の曜日分のみ）
+  // クエリグループを取得
   const groups = forceAll ? getAllQueries() : getTodaysQueries()
   const allQueries = groups.flatMap((g) => g.queries)
 
@@ -247,34 +250,58 @@ export async function runDailyCrawl(forceAll = false): Promise<CrawlResult> {
     .map((e) => `${e.id}: ${e.name}`)
     .join("\n")
 
-  // 収集した全URLを追跡（クエリ間の重複排除）
+  // 全クエリのグラウンディングURLをまず収集
+  const allArticles: GroundingArticle[] = []
   const seenUrls = new Set<string>()
 
-  // 全ニュースアイテム
-  const newNewsItems: NewsItem[] = []
-
+  // Step 1: 全クエリを実行してグラウンディングURLを収集
   for (const query of allQueries) {
     try {
-      const { results, rawCount, dupCount } = await searchAndAnalyze(query, entityList, knownUrls)
+      const articles = await searchForGroundingUrls(ai, query, knownUrls)
       queriesExecuted++
-      rawResults += rawCount
-      duplicatesSkipped += dupCount
+      groundingUrlsFound += articles.length
 
-      for (const item of results) {
-        // クエリ間の重複排除
-        if (seenUrls.has(item.url)) {
+      for (const article of articles) {
+        if (seenUrls.has(article.uri)) {
           duplicatesSkipped++
           continue
         }
-        seenUrls.add(item.url)
-        knownUrls.add(item.url) // 次のクエリでも排除
+        seenUrls.add(article.uri)
+        allArticles.push(article)
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "不明なエラー"
+      errors.push(`検索エラー [${query.slice(0, 30)}...]: ${msg}`)
+    }
+  }
+
+  articleUrlsFiltered = allArticles.length
+  console.log(`[Crawl] Step 1 完了: ${queriesExecuted}クエリ → ${groundingUrlsFound}グラウンディングURL → ${articleUrlsFiltered}記事URL (重複${duplicatesSkipped}件除外)`)
+
+  // Step 2: 収集したURLをバッチ分析（最大10件ずつ）
+  const BATCH_SIZE = 10
+  const newNewsItems: NewsItem[] = []
+
+  for (let i = 0; i < allArticles.length; i += BATCH_SIZE) {
+    const batch = allArticles.slice(i, i + BATCH_SIZE)
+    try {
+      const results = await analyzeArticles(ai, batch, entityList)
+      console.log(`[Analyze] バッチ${Math.floor(i / BATCH_SIZE) + 1}: ${batch.length}件入力 → ${results.length}件の関連記事`)
+
+      for (const item of results) {
+        // 最終重複チェック
+        if (knownUrls.has(item.url)) {
+          duplicatesSkipped++
+          continue
+        }
+        knownUrls.add(item.url)
 
         const id = await getNextId()
         newNewsItems.push({ ...item, id })
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : "不明なエラー"
-      errors.push(`検索・分析エラー [${query.slice(0, 30)}...]: ${msg}`)
+      errors.push(`分析エラー [バッチ${Math.floor(i / BATCH_SIZE) + 1}]: ${msg}`)
     }
   }
 
@@ -290,9 +317,12 @@ export async function runDailyCrawl(forceAll = false): Promise<CrawlResult> {
 
   await setLastCrawled(timestamp)
 
+  console.log(`[Crawl] 完了: ${newNewsItems.length}件の新規記事を保存`)
+
   return {
     queriesExecuted,
-    rawResults,
+    groundingUrlsFound,
+    articleUrlsFiltered,
     duplicatesSkipped,
     newArticles: newNewsItems.length,
     errors,

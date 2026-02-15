@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     console.log("[Cron] ニュースクローリング開始...")
     const result = await runDailyCrawl()
     console.log(
-      `[Cron] 完了: ${result.queriesExecuted}クエリ実行, ${result.newArticles}件追加, ${result.duplicatesSkipped}件重複スキップ`
+      `[Cron] 完了: ${result.queriesExecuted}クエリ実行, グラウンディング${result.groundingUrlsFound}件 → 記事${result.articleUrlsFiltered}件 → ${result.newArticles}件追加`
     )
 
     if (result.errors.length > 0) {
