@@ -48,10 +48,54 @@ function extractGroundingUrls(
 }
 
 /**
+ * GoogleリダイレクトURLを実URLに解決する
+ */
+async function resolveRedirectUrl(redirectUrl: string): Promise<string> {
+  if (!redirectUrl.includes("vertexaisearch.cloud.google.com")) {
+    return redirectUrl
+  }
+  try {
+    const res = await fetch(redirectUrl, { redirect: "manual" })
+    const location = res.headers.get("location")
+    if (location) return location
+  } catch {
+    // フォールバック: リダイレクト解決に失敗
+  }
+  return redirectUrl
+}
+
+/**
+ * 複数のリダイレクトURLを並列で実URLに解決する
+ */
+async function resolveAllRedirectUrls(
+  articles: GroundingArticle[]
+): Promise<GroundingArticle[]> {
+  const resolved: GroundingArticle[] = []
+  // 5並列でリダイレクト解決
+  for (let i = 0; i < articles.length; i += 5) {
+    const batch = articles.slice(i, i + 5)
+    const results = await Promise.allSettled(
+      batch.map(async (a) => {
+        const realUrl = await resolveRedirectUrl(a.uri)
+        return { uri: realUrl, title: a.title }
+      })
+    )
+    for (const r of results) {
+      if (r.status === "fulfilled") {
+        resolved.push(r.value)
+      }
+    }
+  }
+  return resolved
+}
+
+/**
  * URLが具体的な記事ページかどうか判定（HPトップを除外）
  */
 function isSpecificArticleUrl(url: string): boolean {
   try {
+    // GoogleリダイレクトURLは解決前なのでスキップ
+    if (url.includes("vertexaisearch.cloud.google.com")) return true
     const u = new URL(url)
     const path = u.pathname
     if (path === "/" || /^\/[a-z]{2}\/?$/.test(path)) return false
@@ -148,7 +192,7 @@ ${articlesList}
 ## ルール
 - 障害福祉・障害者雇用・就労支援に無関係な記事は除外してください
 - ★最重要★ urlの値は上記リストのURLをそのまま使ってください。URLを変更・生成しないでください。
-- ★重要★ titleは「どの企業/団体が何をしたのか」が一目でわかる日本語タイトルにしてください。URLやドメイン名をタイトルにしないでください。例:「LITALICO、就労支援向け新SaaSツールを発表」「厚労省、障害者法定雇用率を2.7%に引き上げへ」
+- ★重要★ titleは「どの企業/団体が何をしたのか」が一目でわかる日本語タイトルにしてください。URLやドメイン名をタイトルにしないでください。「某社」「ある企業」のような曖昧な表現は禁止です。企業名が不明な場合はURLのドメイン名やタイトルから推測してください。例:「LITALICO、就労支援向け新SaaSツールを発表」「厚労省、障害者法定雇用率を2.7%に引き上げへ」
 - categoryは必ず以下の6つのいずれか: product, partnership, funding, policy, market, technology
 - impactは自社事業（SaaS・人材紹介・メディア事業を運営する障害福祉サービス企業）への影響度。必ず以下の3つのいずれか: high, medium, low
   - high: 直接的な競合の動き、法改正、報酬改定など事業に大きく影響する
@@ -304,8 +348,7 @@ export async function runDailyCrawl(forceAll = false): Promise<CrawlResult> {
     }
   }
 
-  articleUrlsFiltered = allArticles.length
-  console.log(`[Crawl] Step 1 完了 (${Math.round((Date.now() - startTime) / 1000)}秒): ${groundingUrlsFound} → ${articleUrlsFiltered}記事URL`)
+  console.log(`[Crawl] Step 1 完了 (${Math.round((Date.now() - startTime) / 1000)}秒): ${groundingUrlsFound} → ${allArticles.length}件リダイレクトURL`)
 
   // タイムガード: Step 1だけで時間がかかりすぎた場合
   if (Date.now() - startTime > TIME_LIMIT_MS) {
@@ -314,11 +357,47 @@ export async function runDailyCrawl(forceAll = false): Promise<CrawlResult> {
     return { queriesExecuted, groundingUrlsFound, articleUrlsFiltered, duplicatesSkipped, newArticles: 0, errors, timestamp }
   }
 
+  // Step 1.5: リダイレクトURLを実URLに解決
+  console.log(`[Crawl] Step 1.5: ${allArticles.length}件のリダイレクトURLを解決中...`)
+  const resolvedArticles = await resolveAllRedirectUrls(allArticles)
+
+  // 解決後に実URLで重複チェック・フィルタリング
+  const finalArticles: GroundingArticle[] = []
+  const resolvedSeen = new Set<string>()
+  for (const article of resolvedArticles) {
+    // リダイレクト解決に失敗したもの（GoogleリダイレクトURLのまま）は除外
+    if (article.uri.includes("vertexaisearch.cloud.google.com")) continue
+    // トップページ除外
+    if (!isSpecificArticleUrl(article.uri)) continue
+    // 既知URL除外
+    if (knownUrls.has(article.uri)) {
+      duplicatesSkipped++
+      continue
+    }
+    // 重複除外
+    if (resolvedSeen.has(article.uri)) {
+      duplicatesSkipped++
+      continue
+    }
+    resolvedSeen.add(article.uri)
+    finalArticles.push(article)
+  }
+
+  articleUrlsFiltered = finalArticles.length
+  console.log(`[Crawl] Step 1.5 完了 (${Math.round((Date.now() - startTime) / 1000)}秒): ${resolvedArticles.length} → ${articleUrlsFiltered}件の実URL`)
+
+  // タイムガード
+  if (Date.now() - startTime > TIME_LIMIT_MS) {
+    errors.push("タイムアウト: URL解決後に時間切れ")
+    await setLastCrawled(timestamp)
+    return { queriesExecuted, groundingUrlsFound, articleUrlsFiltered, duplicatesSkipped, newArticles: 0, errors, timestamp }
+  }
+
   // Step 2: バッチ分析を並列実行（10件ずつのバッチを3並列）
   const BATCH_SIZE = 10
   const batches: GroundingArticle[][] = []
-  for (let i = 0; i < allArticles.length; i += BATCH_SIZE) {
-    batches.push(allArticles.slice(i, i + BATCH_SIZE))
+  for (let i = 0; i < finalArticles.length; i += BATCH_SIZE) {
+    batches.push(finalArticles.slice(i, i + BATCH_SIZE))
   }
 
   console.log(`[Crawl] Step 2: ${batches.length}バッチを${MAX_PARALLEL}並列で分析...`)

@@ -22,6 +22,10 @@ function isUrlLikeTitle(title: string): boolean {
   return false
 }
 
+function isGoogleRedirectUrl(url: string): boolean {
+  return url.includes("vertexaisearch.cloud.google.com")
+}
+
 interface NewsDetailSheetProps {
   selectedItem: NewsItem | null
   entityMap: Record<string, Entity>
@@ -198,7 +202,7 @@ export function NewsDetailSheet({ selectedItem, entityMap, onClose }: NewsDetail
 
         {/* Article Link */}
         <div className="px-3 sm:px-4 pb-2 shrink-0">
-          {selectedItem.urlVerified === false ? (
+          {selectedItem.urlVerified === false || isGoogleRedirectUrl(selectedItem.url) ? (
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -211,7 +215,16 @@ export function NewsDetailSheet({ selectedItem, entityMap, onClose }: NewsDetail
               >
                 Googleで記事を検索
               </Button>
-              <span className="text-[9px] text-amber-600 self-center shrink-0">URL未確認</span>
+              {isGoogleRedirectUrl(selectedItem.url) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs"
+                  onClick={() => window.open(selectedItem.url, "_blank")}
+                >
+                  リダイレクト経由
+                </Button>
+              )}
             </div>
           ) : (
             <Button
