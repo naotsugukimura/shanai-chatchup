@@ -90,7 +90,12 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
   const entityMap = useMemo(() => createIdMap(entities), [entities])
 
   const filteredNews = useMemo(() => {
-    let items = [...news].sort((a, b) => b.date.localeCompare(a.date))
+    let items = [...news].sort((a, b) => {
+      // crawledAtがあればそちら優先（より正確な時系列順）、なければdateで比較
+      const ta = new Date(a.crawledAt || a.date).getTime()
+      const tb = new Date(b.crawledAt || b.date).getTime()
+      return tb - ta
+    })
 
     if (selectedCategory) {
       items = items.filter((n) => n.category === selectedCategory)

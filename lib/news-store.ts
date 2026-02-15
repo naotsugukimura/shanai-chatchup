@@ -15,6 +15,15 @@ try {
   console.warn("Upstash Redis 接続に失敗しました。フォールバックを使用します。")
 }
 
+/** crawledAt優先 → date で降順ソート（新しいものが先） */
+function sortNewsDesc(items: NewsItem[]): NewsItem[] {
+  return items.sort((a, b) => {
+    const ta = new Date(a.crawledAt || a.date).getTime()
+    const tb = new Date(b.crawledAt || b.date).getTime()
+    return tb - ta
+  })
+}
+
 const NEWS_KEY = "news:items"
 const URLS_KEY = "news:urls"
 const COUNTER_KEY = "news:counter"
@@ -26,26 +35,20 @@ const LAST_CRAWLED_KEY = "news:lastCrawled"
  */
 export async function getAllNews(): Promise<NewsItem[]> {
   if (!redis) {
-    return (fallbackNewsData as unknown as NewsItem[]).sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    )
+    return sortNewsDesc(fallbackNewsData as unknown as NewsItem[])
   }
 
   try {
     const data = await redis.get<NewsItem[]>(NEWS_KEY)
     if (data && data.length > 0) {
-      return data.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      )
+      return sortNewsDesc(data)
     }
   } catch (e) {
     console.error("KV読み出しエラー:", e)
   }
 
   // KVが空の場合、フォールバック
-  return (fallbackNewsData as unknown as NewsItem[]).sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  )
+  return sortNewsDesc(fallbackNewsData as unknown as NewsItem[])
 }
 
 /**
