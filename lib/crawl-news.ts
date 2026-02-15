@@ -14,6 +14,92 @@ interface CrawlResult {
 }
 
 /**
+ * groundingMetadata からソースURLを抽出
+ */
+function extractGroundingUrls(
+  response: Awaited<ReturnType<InstanceType<typeof GoogleGenAI>["models"]["generateContent"]>>
+): { uri: string; title: string }[] {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const candidate = (response as any)?.candidates?.[0]
+    const metadata = candidate?.groundingMetadata
+    if (!metadata?.groundingChunks) return []
+
+    return metadata.groundingChunks
+      .filter((chunk: { web?: { uri?: string; title?: string } }) => chunk.web?.uri)
+      .map((chunk: { web: { uri: string; title?: string } }) => ({
+        uri: chunk.web.uri,
+        title: chunk.web.title || "",
+      }))
+  } catch {
+    return []
+  }
+}
+
+/**
+ * URLが具体的な記事ページかどうか判定（HPトップを除外）
+ */
+function isSpecificArticleUrl(url: string): boolean {
+  try {
+    const u = new URL(url)
+    const path = u.pathname
+    // パスが / のみ、または /ja/ 等の短いパスはトップページ
+    if (path === "/" || /^\/[a-z]{2}\/?$/.test(path)) return false
+    // パスにスラッシュ区切りが2つ以上あれば記事ページの可能性が高い
+    const segments = path.split("/").filter(Boolean)
+    return segments.length >= 2 || /\d/.test(path) || path.includes("article") || path.includes("news") || path.includes("press")
+  } catch {
+    return false
+  }
+}
+
+/**
+ * GeminiのJSON出力URLをgroundingのソースURLで補正
+ */
+function correctUrls(
+  items: { title: string; url: string; [key: string]: unknown }[],
+  groundingUrls: { uri: string; title: string }[]
+): void {
+  // 具体的な記事URLだけ抽出
+  const articleUrls = groundingUrls.filter((g) => isSpecificArticleUrl(g.uri))
+
+  for (const item of items) {
+    // item.urlが既に具体的な記事URLならそのまま
+    if (isSpecificArticleUrl(item.url)) continue
+
+    // タイトルマッチでgroundingから補正
+    const titleLower = item.title.toLowerCase()
+    const match = articleUrls.find((g) => {
+      const gTitleLower = g.title.toLowerCase()
+      // タイトルの一部が一致
+      return (
+        gTitleLower.includes(titleLower.slice(0, 15)) ||
+        titleLower.includes(gTitleLower.slice(0, 15)) ||
+        // ドメインが一致
+        g.uri.includes(new URL(item.url).hostname)
+      )
+    })
+
+    if (match) {
+      item.url = match.uri
+    } else if (articleUrls.length > 0) {
+      // ドメインマッチを試みる
+      try {
+        const itemDomain = new URL(item.url).hostname
+        const domainMatch = articleUrls.find((g) => {
+          try { return new URL(g.uri).hostname === itemDomain } catch { return false }
+        })
+        if (domainMatch) {
+          item.url = domainMatch.uri
+        }
+      } catch {
+        // URLパース失敗は無視
+      }
+    }
+  }
+}
+
+/**
  * Gemini + Google Search grounding でニュースを検索・分析
  * Custom Search JSON API の代替（新規利用不可のため）
  */
@@ -39,6 +125,7 @@ ${query}
 - 直近3日以内の日本語ニュース記事のみ対象
 - 障害福祉・障害者雇用・就労支援に無関係な記事は除外
 - 最大5件まで
+- ★重要★ urlは必ずその記事の具体的なURLを返してください（サイトのトップページやHPのURLではなく、記事個別のURL）
 - categoryは必ず以下の6つのいずれか: product, partnership, funding, policy, market, technology
 - summaryは100文字以内の日本語
 - relatedEntityIdsは以下のエンティティリストから該当するものを選択（該当なしなら空配列）
@@ -57,7 +144,7 @@ ${entityList}
 [
   {
     "title": "記事タイトル",
-    "url": "記事URL",
+    "url": "https://example.com/news/2026/02/15/article-slug（記事個別のURL）",
     "source": "メディア名",
     "date": "YYYY-MM-DD",
     "category": "policy",
@@ -79,6 +166,10 @@ rawResultCountは最初のオブジェクトにだけ含め、Google検索で見
 
   const text = response.text ?? ""
 
+  // groundingMetadataからソースURLを抽出
+  const groundingUrls = extractGroundingUrls(response)
+  console.log(`[Grounding] ${groundingUrls.length}件のソースURL取得:`, groundingUrls.map((g) => g.uri).join(", "))
+
   // JSON部分を抽出
   const jsonMatch = text.match(/\[[\s\S]*\]/)
   if (!jsonMatch) return { results: [], rawCount: 0, dupCount: 0 }
@@ -89,6 +180,9 @@ rawResultCountは最初のオブジェクトにだけ含め、Google検索で見
 
     // rawResultCountを取得
     const rawCount = parsed[0]?.rawResultCount ?? parsed.length
+
+    // GeminiのURLをgroundingソースで補正
+    correctUrls(parsed, groundingUrls)
 
     // バリデーション & 重複排除
     const validCategories = ["product", "partnership", "funding", "policy", "market", "technology"]
