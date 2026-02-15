@@ -126,11 +126,12 @@ interface DashboardClientProps {
   layers: LayerDefinition[]
   triggers: Trigger[]
   news: NewsItem[]
+  lastCrawled: string | null
   supplyChainData: SupplyChainData
   riskScenarios: RiskScenario[]
 }
 
-export function DashboardClient({ entities, layers, triggers, news, supplyChainData, riskScenarios }: DashboardClientProps) {
+export function DashboardClient({ entities, layers, triggers, news, lastCrawled, supplyChainData, riskScenarios }: DashboardClientProps) {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [expandedTriggers, setExpandedTriggers] = useState<string[]>([])
   const [triggerSearch, setTriggerSearch] = useState("")
@@ -448,7 +449,7 @@ export function DashboardClient({ entities, layers, triggers, news, supplyChainD
         </TabsContent>
 
         <TabsContent value="news">
-          <NewsTimeline news={news} entities={entities} />
+          <NewsTimeline news={news} entities={entities} lastCrawled={lastCrawled} />
         </TabsContent>
 
         <TabsContent value="supply-chain">

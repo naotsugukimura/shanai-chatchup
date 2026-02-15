@@ -3,7 +3,7 @@ import layersData from "@/data/layers.json"
 import triggersData from "@/data/triggers.json"
 import supplyChainData from "@/data/supply-chain.json"
 import riskScenariosData from "@/data/risk-scenarios.json"
-import { getAllNews } from "@/lib/news-store"
+import { getAllNews, getLastCrawled } from "@/lib/news-store"
 import { Header } from "@/components/Header"
 import { DashboardClient } from "@/components/DashboardClient"
 import type { Entity, LayerDefinition, SupplyChainData, RiskScenario } from "@/lib/types"
@@ -17,6 +17,7 @@ export default async function Home() {
   const layers = layersData as unknown as LayerDefinition[]
   const triggers = triggersData as unknown as Trigger[]
   const news = await getAllNews()
+  const lastCrawled = await getLastCrawled()
   const supplyChain = supplyChainData as unknown as SupplyChainData
   const riskScenarios = riskScenariosData as unknown as RiskScenario[]
 
@@ -28,6 +29,7 @@ export default async function Home() {
         layers={layers}
         triggers={triggers}
         news={news}
+        lastCrawled={lastCrawled}
         supplyChainData={supplyChain}
         riskScenarios={riskScenarios}
       />

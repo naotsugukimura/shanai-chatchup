@@ -12,9 +12,33 @@ import { createIdMap } from "@/lib/utils"
 interface NewsTimelineProps {
   news: NewsItem[]
   entities: Entity[]
+  lastCrawled: string | null
 }
 
-export function NewsTimeline({ news, entities }: NewsTimelineProps) {
+function formatRelativeTime(isoString: string): string {
+  const date = new Date(isoString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMin = Math.floor(diffMs / 60000)
+  const diffHour = Math.floor(diffMs / 3600000)
+  const diffDay = Math.floor(diffMs / 86400000)
+
+  if (diffMin < 1) return "たった今"
+  if (diffMin < 60) return `${diffMin}分前`
+  if (diffHour < 24) return `${diffHour}時間前`
+  if (diffDay < 7) return `${diffDay}日前`
+  return date.toLocaleDateString("ja-JP", { month: "short", day: "numeric" })
+}
+
+function isNewArticle(crawledAt: string | undefined): boolean {
+  if (!crawledAt) return false
+  const date = new Date(crawledAt)
+  const now = new Date()
+  // 24時間以内にクロールされた記事はNEW
+  return now.getTime() - date.getTime() < 24 * 60 * 60 * 1000
+}
+
+export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps) {
   const [search, setSearch] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [isCrawling, setIsCrawling] = useState(false)
@@ -80,35 +104,60 @@ export function NewsTimeline({ news, entities }: NewsTimelineProps) {
     return counts
   }, [news])
 
+  // 新着記事数（24時間以内にクロールされた記事）
+  const newArticleCount = useMemo(
+    () => news.filter((n) => isNewArticle(n.crawledAt)).length,
+    [news]
+  )
+
+  // 直近7日のニュース数
+  const recentCount = useMemo(() => {
+    const now = new Date()
+    return news.filter((n) => {
+      const d = new Date(n.date)
+      return now.getTime() - d.getTime() < 7 * 24 * 60 * 60 * 1000
+    }).length
+  }, [news])
+
   return (
     <div className="space-y-4">
       {/* Summary */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <div className="border rounded-lg p-4">
           <p className="text-xs text-muted-foreground mb-1">総ニュース数</p>
           <p className="text-2xl font-bold">{news.length}</p>
         </div>
         <div className="border rounded-lg p-4">
-          <p className="text-xs text-muted-foreground mb-1">関連エンティティ</p>
-          <p className="text-2xl font-bold">
-            {new Set(news.flatMap((n) => n.relatedEntityIds)).size}
+          <p className="text-xs text-muted-foreground mb-1">新着 (24h)</p>
+          <p className="text-2xl font-bold text-green-500">
+            {newArticleCount > 0 ? `+${newArticleCount}` : "0"}
           </p>
         </div>
         <div className="border rounded-lg p-4">
           <p className="text-xs text-muted-foreground mb-1">直近7日</p>
-          <p className="text-2xl font-bold text-blue-500">
-            {news.filter((n) => {
-              const d = new Date(n.date)
-              const now = new Date()
-              return now.getTime() - d.getTime() < 7 * 24 * 60 * 60 * 1000
-            }).length}
-          </p>
+          <p className="text-2xl font-bold text-blue-500">{recentCount}</p>
         </div>
         <div className="border rounded-lg p-4">
           <p className="text-xs text-muted-foreground mb-1">政策関連</p>
           <p className="text-2xl font-bold text-red-500">
             {categoryCounts["policy"] || 0}
           </p>
+        </div>
+        <div className="border rounded-lg p-4">
+          <p className="text-xs text-muted-foreground mb-1">最終更新</p>
+          <p className="text-lg font-bold">
+            {lastCrawled ? formatRelativeTime(lastCrawled) : "未取得"}
+          </p>
+          {lastCrawled && (
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              {new Date(lastCrawled).toLocaleString("ja-JP", {
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+          )}
         </div>
       </div>
 
@@ -169,13 +218,14 @@ export function NewsTimeline({ news, entities }: NewsTimelineProps) {
         <div className="space-y-4">
           {filteredNews.map((item) => {
             const cat = NEWS_CATEGORIES[item.category]
+            const isNew = isNewArticle(item.crawledAt)
             return (
               <div key={item.id} className="relative pl-10">
                 <div
                   className="absolute left-2.5 top-4 w-3 h-3 rounded-full border-2 border-background"
                   style={{ backgroundColor: cat?.color ?? "#6b7280" }}
                 />
-                <Card>
+                <Card className={isNew ? "ring-1 ring-green-400/50 bg-green-50/30 dark:bg-green-950/10" : ""}>
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-2 mb-1.5">
                       <div className="flex items-center gap-1.5 flex-wrap">
@@ -185,6 +235,11 @@ export function NewsTimeline({ news, entities }: NewsTimelineProps) {
                         >
                           {cat?.icon} {cat?.label}
                         </Badge>
+                        {isNew && (
+                          <Badge className="text-[10px] px-1.5 py-0 bg-green-500 text-white border-0 animate-pulse">
+                            NEW
+                          </Badge>
+                        )}
                         <span className="text-[10px] text-muted-foreground">
                           {item.date}
                         </span>
@@ -192,6 +247,11 @@ export function NewsTimeline({ news, entities }: NewsTimelineProps) {
                           / {item.source}
                         </span>
                       </div>
+                      {item.crawledAt && (
+                        <span className="text-[9px] text-muted-foreground whitespace-nowrap" title={`取得: ${new Date(item.crawledAt).toLocaleString("ja-JP")}`}>
+                          取得 {formatRelativeTime(item.crawledAt)}
+                        </span>
+                      )}
                     </div>
 
                     <a
