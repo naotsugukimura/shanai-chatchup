@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react"
 import { Badge } from "@/components/ui/badge"
 import type { Entity, LayerDefinition, SupplyChainData, SupplyChainNode, ConnectionReason } from "@/lib/types"
-import { INFLUENCE_COLORS, SUPPLY_CHAIN_LEVEL_LABELS } from "@/lib/constants"
+import { INFLUENCE_COLORS, SUPPLY_CHAIN_LEVEL_LABELS, EDGE_TYPE_STYLES } from "@/lib/constants"
 import { createIdMap, createNumericIdMap } from "@/lib/utils"
 
 interface SupplyChainTreeProps {
@@ -99,14 +99,16 @@ export function SupplyChainTree({
     .map(Number)
     .sort((a, b) => a - b)
 
-  // Generate connection lines
-  const connections: { from: string; to: string; type: string }[] = []
+  // Generate connection lines with edgeType from connectionReasons
+  const connections: { from: string; to: string; type: string; edgeType: string }[] = []
   for (const node of chain.nodes) {
     for (const childId of node.children) {
+      const cr = reasonMap[`${node.entityId}->${childId}`]
       connections.push({
         from: node.entityId,
         to: childId,
         type: node.influenceType,
+        edgeType: cr?.edgeType ?? "dependency",
       })
     }
   }
@@ -200,7 +202,7 @@ export function SupplyChainTree({
           className="absolute inset-0 w-full h-full"
           style={{ zIndex: 0 }}
         >
-          {connections.map(({ from, to, type }) => {
+          {connections.map(({ from, to, type, edgeType }) => {
             const fromPos = positions[from]
             const toPos = positions[to]
             if (!fromPos || !toPos) return null
@@ -212,7 +214,9 @@ export function SupplyChainTree({
             const isDimmed = highlightedNodes && !isHighlighted
             const isHoveredLine =
               hoveredConnection?.from === from && hoveredConnection?.to === to
-            const color = INFLUENCE_COLORS[type]?.color ?? "#94a3b8"
+            const edgeStyle = EDGE_TYPE_STYLES[edgeType]
+            const influenceColor = INFLUENCE_COLORS[type]?.color ?? "#94a3b8"
+            const color = edgeStyle?.color ?? influenceColor
             const hasReason = !!reasonMap[`${from}->${to}`]
 
             // Calculate bezier curve points
@@ -221,6 +225,13 @@ export function SupplyChainTree({
             const endX = toPos.x
             const endY = toPos.y - toPos.height / 2
             const midY = (startY + endY) / 2
+
+            // Edge type specific dash patterns
+            const baseDash = edgeStyle?.dashArray ?? "none"
+            const dashArray = isDimmed ? "4 4" : baseDash
+
+            // Bottleneck edges are thicker
+            const baseWidth = edgeType === "bottleneck" ? 3 : 1.5
 
             return (
               <g key={`${from}-${to}`}>
@@ -240,8 +251,8 @@ export function SupplyChainTree({
                   d={`M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`}
                   fill="none"
                   stroke={isDimmed ? "#e2e8f0" : isHoveredLine ? "#f59e0b" : color}
-                  strokeWidth={isHoveredLine ? 3.5 : isHighlighted ? 2.5 : 1.5}
-                  strokeDasharray={isDimmed ? "4 4" : "none"}
+                  strokeWidth={isHoveredLine ? 3.5 : isHighlighted ? baseWidth + 1 : baseWidth}
+                  strokeDasharray={dashArray}
                   opacity={isDimmed ? 0.3 : 0.7}
                   className={hasReason ? "pointer-events-none" : ""}
                 />
@@ -253,8 +264,33 @@ export function SupplyChainTree({
                   fill={isDimmed ? "#e2e8f0" : isHoveredLine ? "#f59e0b" : color}
                   opacity={isDimmed ? 0.3 : 0.8}
                 />
-                {/* Reason indicator on the line */}
-                {hasReason && !isDimmed && (
+                {/* Edge type label on the line */}
+                {hasReason && !isDimmed && edgeType !== "dependency" && (
+                  <g>
+                    <rect
+                      x={(startX + endX) / 2 - 16}
+                      y={midY - 7}
+                      width={32}
+                      height={14}
+                      rx={3}
+                      fill={isHoveredLine ? "#f59e0b" : color}
+                      opacity={0.9}
+                    />
+                    <text
+                      x={(startX + endX) / 2}
+                      y={midY + 3}
+                      textAnchor="middle"
+                      fill="white"
+                      fontSize={8}
+                      fontWeight="bold"
+                      className="pointer-events-none select-none"
+                    >
+                      {edgeStyle?.label ?? ""}
+                    </text>
+                  </g>
+                )}
+                {/* Default reason indicator for dependency edges */}
+                {hasReason && !isDimmed && edgeType === "dependency" && (
                   <circle
                     cx={(startX + endX) / 2}
                     cy={midY}
@@ -333,30 +369,47 @@ export function SupplyChainTree({
                           </div>
                         </div>
 
-                        {/* Influence badge */}
-                        {influence && (
-                          <div className="flex items-center gap-1 mb-1">
+                        {/* Influence badge + special indicators */}
+                        <div className="flex items-center gap-1 mb-1 flex-wrap">
+                          {influence && (
                             <span
                               className="text-[8px] px-1 py-0 rounded text-white"
                               style={{ backgroundColor: influence.color }}
                             >
                               {influence.label}
                             </span>
-                            {layer && (
-                              <Badge
-                                className="text-[8px] px-1 py-0 shrink-0 text-white border-0"
-                                style={{ backgroundColor: layer.color }}
-                              >
-                                L{layer.id}
-                              </Badge>
-                            )}
-                          </div>
-                        )}
+                          )}
+                          {layer && (
+                            <Badge
+                              className="text-[8px] px-1 py-0 shrink-0 text-white border-0"
+                              style={{ backgroundColor: layer.color }}
+                            >
+                              L{layer.id}
+                            </Badge>
+                          )}
+                          {node.bottleneck && (
+                            <span className="text-[8px] px-1 py-0 rounded bg-red-600 text-white font-bold">
+                              BOTTLENECK
+                            </span>
+                          )}
+                          {node.subType && (
+                            <span className="text-[8px] px-1 py-0 rounded bg-slate-600 text-white">
+                              {node.subType === "back-office" ? "事務系" : node.subType === "service-quality" ? "教育系" : node.subType}
+                            </span>
+                          )}
+                        </div>
 
                         {/* Influence description */}
                         <p className="text-[9px] text-muted-foreground line-clamp-2 leading-relaxed">
                           {node.influenceDescription}
                         </p>
+
+                        {/* Override Rules indicator */}
+                        {node.overrideRules && (
+                          <div className="mt-1 px-1.5 py-0.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded text-[8px] text-amber-800 dark:text-amber-200">
+                            ⚠ {node.overrideRules}
+                          </div>
+                        )}
 
                         {/* Children indicator */}
                         {node.children.length > 0 && (
@@ -391,6 +444,14 @@ export function SupplyChainTree({
                 <span className="text-[10px] bg-amber-200 dark:bg-amber-800 px-2 py-0.5 rounded font-semibold">
                   {entityMap[hoveredConnection.to]?.name ?? hoveredConnection.to}
                 </span>
+                {hoveredConnection.edgeType && hoveredConnection.edgeType !== "dependency" && (
+                  <span
+                    className="text-[9px] px-1.5 py-0.5 rounded text-white font-bold"
+                    style={{ backgroundColor: EDGE_TYPE_STYLES[hoveredConnection.edgeType]?.color ?? "#6B7280" }}
+                  >
+                    {EDGE_TYPE_STYLES[hoveredConnection.edgeType]?.label ?? hoveredConnection.edgeType}
+                  </span>
+                )}
               </div>
               <p className="text-xs leading-relaxed text-amber-900 dark:text-amber-100">
                 {hoveredConnection.reason}
@@ -498,18 +559,36 @@ export function SupplyChainTree({
       )}
 
       {/* Legend */}
-      <div className="flex items-center gap-4 flex-wrap text-[10px] text-muted-foreground">
-        <span className="font-semibold">影響タイプ:</span>
-        {Object.entries(INFLUENCE_COLORS).map(([key, val]) => (
-          <div key={key} className="flex items-center gap-1">
-            <span
-              className="w-2.5 h-2.5 rounded-sm"
-              style={{ backgroundColor: val.color }}
-            />
-            <span>{val.label}</span>
-          </div>
-        ))}
-        <span className="ml-2">※ ノードをクリックで影響経路をハイライト / 接続線をクリックで「なぜつながっているか」を表示</span>
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-4 flex-wrap text-[10px] text-muted-foreground">
+          <span className="font-semibold">影響タイプ:</span>
+          {Object.entries(INFLUENCE_COLORS).map(([key, val]) => (
+            <div key={key} className="flex items-center gap-1">
+              <span
+                className="w-2.5 h-2.5 rounded-sm"
+                style={{ backgroundColor: val.color }}
+              />
+              <span>{val.label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center gap-4 flex-wrap text-[10px] text-muted-foreground">
+          <span className="font-semibold">関係性:</span>
+          {Object.entries(EDGE_TYPE_STYLES).map(([key, val]) => (
+            <div key={key} className="flex items-center gap-1">
+              <svg width="16" height="8">
+                <line
+                  x1="0" y1="4" x2="16" y2="4"
+                  stroke={val.color}
+                  strokeWidth={key === "bottleneck" ? 3 : 1.5}
+                  strokeDasharray={val.dashArray ?? "none"}
+                />
+              </svg>
+              <span>{val.label}</span>
+            </div>
+          ))}
+        </div>
+        <p className="text-[10px] text-muted-foreground">※ ノードをクリックで影響経路をハイライト / 接続線をクリックで「なぜつながっているか」を表示</p>
       </div>
     </div>
   )

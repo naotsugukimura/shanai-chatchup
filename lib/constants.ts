@@ -45,10 +45,22 @@ export const INFLUENCE_COLORS: Record<
 
 export const SUPPLY_CHAIN_LEVEL_LABELS = [
   "制度/基盤",
+  "中間機関/ゲートキーパー",
   "事業者/企業",
   "SaaS/ソフトウェア",
-  "テクノロジー",
+  "テクノロジー/サービス",
 ]
+
+export const EDGE_TYPE_STYLES: Record<
+  string,
+  { color: string; label: string; dashArray?: string }
+> = {
+  dependency: { color: "#6B7280", label: "依存" },
+  cooperation: { color: "#10B981", label: "協力" },
+  competition: { color: "#EF4444", label: "競合", dashArray: "6 3" },
+  direct: { color: "#F59E0B", label: "直接", dashArray: "8 4" },
+  bottleneck: { color: "#DC2626", label: "ボトルネック" },
+}
 
 export const TRIGGER_STATUS_MAP: Record<
   string,

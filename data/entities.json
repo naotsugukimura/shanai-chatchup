@@ -1149,5 +1149,73 @@
     "status": "confirmed",
     "lastUpdated": "2026-02-14",
     "addedBy": "木村"
+  },
+  {
+    "id": "L1-006",
+    "name": "自治体（指定権者）",
+    "nameKana": "じちたい していけんしゃ",
+    "layer": 1,
+    "subCategory": null,
+    "summary": "障害福祉サービスの指定・指導監査を行う都道府県・政令市・中核市。ローカルルール（独自の指導基準）が全国標準化を阻害する構造的障壁",
+    "impactLevel": "high",
+    "affectedBusiness": ["saas"],
+    "impactDetail": {
+      "recruitment": "low",
+      "media": "none",
+      "saas": "high"
+    },
+    "monitoringReason": "国の制度が標準化されても、実際の運用は自治体ごとの指導監査基準（ローカルルール）に依存する。SaaSの全国展開にとって最大の障壁であり、自治体ごとの仕様差異がカスタマイズコストを増大させる",
+    "monitoringPoints": [
+      "指導監査における独自ルールの動向",
+      "自治体システム標準化の進捗",
+      "指定基準の地域間差異",
+      "電子申請・届出の導入状況"
+    ],
+    "recommendedFrequency": "monthly",
+    "sources": [
+      { "name": "総務省 自治体DX推進計画", "url": "https://www.soumu.go.jp/denshijiti/index.html", "frequency": "随時" }
+    ],
+    "officialUrl": null,
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": ["L1-005", "L1-001"],
+    "notes": "約1,700超の指定権者を仮想的に1エンティティとして監視。ローカルルールの標準化動向が焦点",
+    "status": "confirmed",
+    "lastUpdated": "2026-02-15",
+    "addedBy": "木村"
+  },
+  {
+    "id": "L2-005",
+    "name": "障害者雇用義務企業群",
+    "nameKana": "しょうがいしゃこようぎむきぎょうぐん",
+    "layer": 2,
+    "subCategory": null,
+    "summary": "法定雇用率の対象となる民間企業群（従業員40人以上）。障害者の採用・定着ニーズの発生源であり、人材紹介と就労移行支援の双方に直接的な需要を生む",
+    "impactLevel": "high",
+    "affectedBusiness": ["recruitment"],
+    "impactDetail": {
+      "recruitment": "high",
+      "media": "medium",
+      "saas": "low"
+    },
+    "monitoringReason": "法定雇用率引き上げで追加雇用義務が発生する企業群。人材紹介への依頼だけでなく、就労移行支援事業所への直接採用（ダイレクトリクルーティング）も増加しており、中間事業者（人材紹介）の存在意義に構造変化を起こしている",
+    "monitoringPoints": [
+      "法定雇用率の達成状況（業種・規模別）",
+      "納付金・調整金の動向",
+      "ダイレクトリクルーティングの増加傾向",
+      "特例子会社・農園型雇用の動向"
+    ],
+    "recommendedFrequency": "quarterly",
+    "sources": [
+      { "name": "厚労省 障害者雇用状況の集計結果", "url": "https://www.mhlw.go.jp/stf/newpage_16030.html", "frequency": "年1回" }
+    ],
+    "officialUrl": null,
+    "stockCode": null,
+    "operator": null,
+    "relatedEntities": ["L1-002", "L3A-001", "L3A-002"],
+    "notes": "対象企業約10万社を仮想的に1エンティティとして監視",
+    "status": "confirmed",
+    "lastUpdated": "2026-02-15",
+    "addedBy": "木村"
   }
 ]

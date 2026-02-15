@@ -2,65 +2,42 @@
   "chains": [
     {
       "id": "SC-001",
-      "title": "報酬改定の影響連鎖",
-      "description": "厚労省の報酬改定が事業所運営とソフトウェアに波及",
-      "overview": "障害福祉サービスの報酬は3年ごとに厚労省が改定します。報酬単価や加算体系が変わると、事業所は運営方針を見直す必要があり、その変更は外部SaaS（knowbe等）や自社SaaS（LITALICOのかんたん請求ソフト等）の請求ロジック・加算マスタの改修に直結します。つまり「国が制度を変える→事業所が対応する→SaaSが追従する」という上流から下流への不可避な連鎖が生まれます。",
+      "title": "報酬改定の影響連鎖（国保連ボトルネック）",
+      "description": "厚労省の報酬改定が国保連のシステム改修を経由してSaaS企業に波及する構造",
+      "overview": "報酬改定の仕様は厚労省が決定しますが、実際のデータ伝送フォーマットは国保中央会（国保連）のシステム改修に依存します。国保連の仕様公開が遅れると、全SaaS企業の開発スケジュールがブロックされます。「厚労省が制度を変える→国保連がフォーマットを改修する→SaaSが追従する→事業所が対応する」という、国保連がボトルネックになる直列連鎖です。",
       "nodes": [
         {
           "entityId": "L1-001",
           "level": 0,
-          "role": "制度設計",
-          "children": ["L2-001", "L2-002", "L2-003", "L2-004"],
+          "role": "制度設計（報酬改定の決定）",
+          "children": ["L1-003"],
           "influenceType": "regulation",
-          "influenceDescription": "報酬単価・加算体系の改定"
+          "influenceDescription": "報酬単価・加算体系の改定方針を決定"
         },
         {
-          "entityId": "L2-001",
+          "entityId": "L1-003",
           "level": 1,
-          "role": "事業所運営（最大手）",
-          "children": ["L3C-006", "L3C-001", "L3B-001"],
-          "influenceType": "market",
-          "influenceDescription": "報酬改定に合わせたサービス体制の見直し"
-        },
-        {
-          "entityId": "L2-002",
-          "level": 1,
-          "role": "事業所運営（就労移行特化）",
-          "children": ["L3C-001", "L3C-002"],
-          "influenceType": "market",
-          "influenceDescription": "拠点展開戦略の変更"
-        },
-        {
-          "entityId": "L2-003",
-          "level": 1,
-          "role": "事業所運営（成長中）",
-          "children": ["L3C-001", "L3C-003"],
-          "influenceType": "market",
-          "influenceDescription": "加算取得方針の変更"
-        },
-        {
-          "entityId": "L2-004",
-          "level": 1,
-          "role": "事業所運営（M&A拡大中）",
-          "children": ["L3C-001"],
-          "influenceType": "market",
-          "influenceDescription": "M&A戦略への影響"
-        },
-        {
-          "entityId": "L3C-006",
-          "level": 2,
-          "role": "LITALICO自社SaaS",
-          "children": [],
-          "influenceType": "competition",
-          "influenceDescription": "親会社LITALICOの方針に連動した請求ロジック改修"
+          "role": "データ伝送のゲートキーパー（ボトルネック）",
+          "children": ["L3C-001", "L3C-006", "L3C-002", "L3C-003", "L3C-004"],
+          "influenceType": "regulation",
+          "influenceDescription": "電子請求受付システムの仕様改修。全SaaSの出口であり、ここの対応遅延が業界全体をブロック",
+          "bottleneck": true
         },
         {
           "entityId": "L3C-001",
           "level": 2,
           "role": "業務ソフト（独立系・元リクルート系）",
-          "children": [],
+          "children": ["L2-001", "L2-002", "L2-003", "L2-004"],
           "influenceType": "competition",
           "influenceDescription": "請求ロジック・加算マスタの改修対応"
+        },
+        {
+          "entityId": "L3C-006",
+          "level": 2,
+          "role": "LITALICO自社SaaS",
+          "children": ["L2-001"],
+          "influenceType": "competition",
+          "influenceDescription": "親会社LITALICOの方針に連動した請求ロジック改修"
         },
         {
           "entityId": "L3C-002",
@@ -79,46 +56,85 @@
           "influenceDescription": "障害福祉モジュールの改修"
         },
         {
-          "entityId": "L3B-001",
+          "entityId": "L3C-004",
           "level": 2,
-          "role": "メディア（求人）",
+          "role": "業務ソフト（レガシー系）",
           "children": [],
           "influenceType": "competition",
-          "influenceDescription": "事業所情報の更新・新規事業所の掲載"
+          "influenceDescription": "レガシーアーキテクチャでの対応遅延リスク"
+        },
+        {
+          "entityId": "L2-001",
+          "level": 3,
+          "role": "事業所運営（最大手）",
+          "children": [],
+          "influenceType": "market",
+          "influenceDescription": "報酬改定に合わせたサービス体制の見直し"
+        },
+        {
+          "entityId": "L2-002",
+          "level": 3,
+          "role": "事業所運営（就労移行特化）",
+          "children": [],
+          "influenceType": "market",
+          "influenceDescription": "拠点展開戦略の変更"
+        },
+        {
+          "entityId": "L2-003",
+          "level": 3,
+          "role": "事業所運営（成長中）",
+          "children": [],
+          "influenceType": "market",
+          "influenceDescription": "加算取得方針の変更"
+        },
+        {
+          "entityId": "L2-004",
+          "level": 3,
+          "role": "事業所運営（M&A拡大中）",
+          "children": [],
+          "influenceType": "market",
+          "influenceDescription": "M&A戦略への影響"
         }
       ],
       "connectionReasons": [
-        { "from": "L1-001", "to": "L2-001", "reason": "厚労省が報酬単価を改定すると、LITALICOは全国350超の事業所の運営コスト・収益構造を見直す必要がある。特に就労支援の成果指標が変われば、サービス提供体制そのものを再設計する" },
-        { "from": "L1-001", "to": "L2-002", "reason": "ウェルビーは就労移行支援に特化しており、報酬改定で移行実績に対する評価基準が変わると、拠点の新設・統廃合の判断に直結する" },
-        { "from": "L1-001", "to": "L2-003", "reason": "ココルポートは成長フェーズにあり、加算取得を前提とした収益計画を組んでいる。加算体系の変更は事業拡大のスピードに影響する" },
-        { "from": "L1-001", "to": "L2-004", "reason": "AHCグループはM&Aで急拡大中。報酬改定で事業所の採算ラインが変わると、買収対象の事業所の価値評価が変動する" },
-        { "from": "L2-001", "to": "L3C-006", "reason": "LITALICOの体制見直しは、子会社が運営する「かんたん請求ソフト」の機能要件に直結する。LITALICOの350事業所で使われるため、改修の優先度は最も高い" },
-        { "from": "L2-001", "to": "L3C-001", "reason": "LITALICOは自社SaaS以外にknowbeを利用する事業所とも競合関係にある。LITALICOの体制変更は業界全体のSaaSニーズに波及し、knowbeにも加算管理・実績レポート等の新機能要件が生まれる" },
-        { "from": "L2-001", "to": "L3B-001", "reason": "LITALICOの事業所再編は自社メディア「仕事ナビ」の掲載情報に直結。新規事業所の開設・閉鎖が掲載情報の更新コストに影響する" },
-        { "from": "L2-002", "to": "L3C-001", "reason": "ウェルビーの拠点展開が変われば、利用するSaaSの契約数（席数）が増減する。大口顧客の戦略変更はknowbeの売上に直接影響" },
-        { "from": "L2-002", "to": "L3C-002", "reason": "ウェルビーは放デイ事業も展開しており、HUGなど放デイ特化ソフトの顧客でもある。拠点戦略の変更は導入数に影響する" },
-        { "from": "L2-003", "to": "L3C-001", "reason": "ココルポートが加算取得方針を変えると、knowbeに求める加算シミュレーション・算定支援機能の優先度が変わる" },
-        { "from": "L2-003", "to": "L3C-003", "reason": "ココルポートはほのぼのmoreも併用の可能性がある。介護寄りソフトが障害福祉機能を強化すれば、乗り換え先候補になる" },
-        { "from": "L2-004", "to": "L3C-001", "reason": "AHCグループのM&Aで事業所数が急増すると、一括導入するSaaSの選定が大型案件として発生。knowbeが選ばれるかどうかの分岐点になる" }
+        { "from": "L1-001", "to": "L1-003", "reason": "厚労省が報酬改定の方針を決定すると、国保中央会は電子請求受付システムの仕様（CSVレイアウト・加算コード体系）を改修する必要がある。しかし仕様書の公開は改定施行の2〜3ヶ月前になることが多く、ここが全SaaSの開発ボトルネックになる", "edgeType": "bottleneck" },
+        { "from": "L1-003", "to": "L3C-001", "reason": "国保連の請求フォーマットが変わると、knowbeの請求エンジンは全面改修が必要。国保連は全SaaSの「出口」であるため、ここの変更は避けられない", "edgeType": "bottleneck" },
+        { "from": "L1-003", "to": "L3C-006", "reason": "かんたん請求ソフトもフォーマット変更への対応が必須。ただしLITALICO自身が350超の事業所を持つため、自社利用で先行的にテスト・改修できる強みがある", "edgeType": "bottleneck" },
+        { "from": "L1-003", "to": "L3C-002", "reason": "HUGは放デイに特化しているが、国保連のフォーマット変更はサービス種別を問わず適用される。対応コストが小規模SaaSの経営を圧迫する", "edgeType": "bottleneck" },
+        { "from": "L1-003", "to": "L3C-003", "reason": "ほのぼのmoreは介護の国保連請求と障害の国保連請求の両方に対応しており、フォーマット変更の影響を二重に受ける", "edgeType": "bottleneck" },
+        { "from": "L1-003", "to": "L3C-004", "reason": "介舟ファミリーはレガシーなアーキテクチャで動いており、新しいフォーマットへの対応はシステム全体の作り直しに近い。対応が遅れれば顧客流出のリスクがある", "edgeType": "bottleneck" },
+        { "from": "L3C-001", "to": "L2-001", "reason": "knowbeの改修が完了しないと、LITALICOの事業所は新しい報酬体系での請求ができない。SaaS→事業所への依存関係", "edgeType": "dependency" },
+        { "from": "L3C-001", "to": "L2-002", "reason": "ウェルビーの拠点展開が変われば、利用するSaaSの契約数（席数）が増減する。大口顧客の戦略変更はknowbeの売上に直接影響", "edgeType": "dependency" },
+        { "from": "L3C-001", "to": "L2-003", "reason": "ココルポートが加算取得方針を変えると、knowbeに求める加算シミュレーション・算定支援機能の優先度が変わる", "edgeType": "dependency" },
+        { "from": "L3C-001", "to": "L2-004", "reason": "AHCグループのM&Aで事業所数が急増すると、一括導入するSaaSの選定が大型案件として発生する", "edgeType": "dependency" },
+        { "from": "L3C-006", "to": "L2-001", "reason": "LITALICOの体制見直しは、子会社が運営する「かんたん請求ソフト」の機能要件に直結する。LITALICOの350事業所で使われるため、改修の優先度は最も高い", "edgeType": "dependency" }
       ]
     },
     {
       "id": "SC-002",
-      "title": "法定雇用率引き上げの影響連鎖",
-      "description": "雇用率引き上げが企業の障害者雇用支援ニーズを生み、人材輩出機関に波及",
-      "overview": "法定雇用率が引き上げられると、企業は追加で障害者を採用する義務が生まれます。自社だけでは採用・定着が難しいため、企業はまず障害者雇用支援サービス（人材紹介会社、サテライトオフィス、農園型雇用など）に支援を依頼します。そしてその「採用される障害者」を輩出しているのが就労移行支援事業所です。つまり「国が法律を変える→企業が障害者雇用の支援を求める→人材紹介/サテライトオフィス/農園が仲介する→就労移行支援事業所が人材を育成・輩出する」という4段階の連鎖が生まれます。",
+      "title": "法定雇用率の影響連鎖（中抜き構造と直接採用）",
+      "description": "雇用率引き上げが企業→人材紹介→就労移行の連鎖と、企業→就労移行の直接採用バイパスを同時に生む",
+      "overview": "法定雇用率が2.7%に引き上げられると、企業は追加で障害者を採用する義務が生まれます。従来は「企業→人材紹介→就労移行支援」という流れでしたが、近年は企業が就労移行支援事業所と直接連携する「ダイレクトリクルーティング」が増加しています。人材紹介会社にとって就労移行支援は「人材の供給源（協力関係）」であると同時に「企業との直接契約で中抜きされる相手（競合関係）」でもあり、この二面性が業界の構造的緊張を生んでいます。",
       "nodes": [
         {
           "entityId": "L1-002",
           "level": 0,
           "role": "制度設計（法定雇用率）",
-          "children": ["L3A-001", "L3A-002", "L3A-003", "L3A-004", "L3A-005"],
+          "children": ["L2-005"],
           "influenceType": "regulation",
           "influenceDescription": "法定雇用率2.7%への引き上げ（2026年7月）→ 企業に障害者の追加雇用義務"
         },
         {
-          "entityId": "L3A-001",
+          "entityId": "L2-005",
           "level": 1,
+          "role": "障害者雇用義務企業群（需要の発生源）",
+          "children": ["L3A-001", "L3A-002", "L3A-003", "L3A-004", "L3A-005", "L2-001", "L2-002", "L2-003"],
+          "influenceType": "market",
+          "influenceDescription": "追加雇用ニーズが人材紹介と就労移行支援の両方に流れる"
+        },
+        {
+          "entityId": "L3A-001",
+          "level": 2,
           "role": "障害者雇用支援（専門大手）",
           "children": ["L2-001", "L2-002", "L2-003"],
           "influenceType": "market",
@@ -126,7 +142,7 @@
         },
         {
           "entityId": "L3A-002",
-          "level": 1,
+          "level": 2,
           "role": "障害者雇用支援（総合大手系）",
           "children": ["L2-001", "L2-002"],
           "influenceType": "market",
@@ -134,7 +150,7 @@
         },
         {
           "entityId": "L3A-003",
-          "level": 1,
+          "level": 2,
           "role": "障害者雇用支援（ナビ型）",
           "children": ["L2-001"],
           "influenceType": "market",
@@ -142,7 +158,7 @@
         },
         {
           "entityId": "L3A-004",
-          "level": 1,
+          "level": 2,
           "role": "障害者雇用支援（マッチング型）",
           "children": ["L2-002", "L2-003"],
           "influenceType": "market",
@@ -150,7 +166,7 @@
         },
         {
           "entityId": "L3A-005",
-          "level": 1,
+          "level": 2,
           "role": "障害者雇用支援（ナビ型）",
           "children": ["L2-001", "L2-002"],
           "influenceType": "market",
@@ -158,15 +174,15 @@
         },
         {
           "entityId": "L2-001",
-          "level": 2,
+          "level": 3,
           "role": "就労移行支援（大手・人材輩出）",
           "children": [],
           "influenceType": "competition",
-          "influenceDescription": "350超拠点から人材を輩出。定員増・新規開設の判断に影響"
+          "influenceDescription": "350超拠点から人材を輩出。企業からの直接採用依頼も増加"
         },
         {
           "entityId": "L2-002",
-          "level": 2,
+          "level": 3,
           "role": "就労移行支援（特化型・人材輩出）",
           "children": [],
           "influenceType": "competition",
@@ -174,7 +190,7 @@
         },
         {
           "entityId": "L2-003",
-          "level": 2,
+          "level": 3,
           "role": "就労移行支援（成長中・人材輩出）",
           "children": [],
           "influenceType": "competition",
@@ -182,44 +198,58 @@
         }
       ],
       "connectionReasons": [
-        { "from": "L1-002", "to": "L3A-001", "reason": "法定雇用率が2.7%に引き上げられると、未達成企業の納付金（ペナルティ）リスクが高まる。企業は専門の障害者人材紹介であるatGPに求人を出すため、ゼネラルパートナーズへの依頼が急増する" },
-        { "from": "L1-002", "to": "L3A-002", "reason": "雇用率引き上げで企業のHR部門全体が動く。パーソルチャレンジ（dodaチャレンジ）は既存のdoda法人顧客から障害者採用ニーズを吸い上げ、サテライトオフィスや農園型雇用の提案も含めたソリューション営業を強化する" },
-        { "from": "L1-002", "to": "L3A-003", "reason": "クローバーナビは掲載型の求人メディアであり、企業の求人出稿が増えるとPV・マッチング数が連動して伸びる。法改正は企業の採用活動活発化を通じた自然増を促す" },
-        { "from": "L1-002", "to": "L3A-004", "reason": "障害者雇用バンクのマッチングプラットフォームは、求人と求職者の双方が増えるとネットワーク効果で価値が高まる。雇用率引き上げは求人サイドの増加を直接もたらす" },
-        { "from": "L1-002", "to": "L3A-005", "reason": "WEBサーナは大手企業向けに強い。法定雇用率の引き上げで、これまで障害者採用に積極的でなかった中堅企業も対象になるため、新規顧客層が広がる" },
-        { "from": "L3A-001", "to": "L2-001", "reason": "atGPが企業から受ける求人を埋めるためには、就職準備ができた障害者が必要。LITALICOの就労移行支援は年間数千名の卒業生を輩出しており、最大の人材供給源となる" },
-        { "from": "L3A-001", "to": "L2-002", "reason": "atGPは就労移行支援事業所との連携で求職者を確保する。ウェルビーは就労移行に特化しており、移行実績の高さからatGPにとって信頼できる送り出し先" },
-        { "from": "L3A-001", "to": "L2-003", "reason": "ココルポートは首都圏を中心に拠点を拡大中で、atGPの求人エリアと重なる。人材紹介の需要増がココルポートの新規拠点開設の後押しになる" },
-        { "from": "L3A-002", "to": "L2-001", "reason": "dodaチャレンジが大手企業から受ける求人は質・量ともにハイレベル。LITALICOの就労移行は訓練の質が高く、dodaチャレンジが企業に推薦できる人材を育てている" },
-        { "from": "L3A-002", "to": "L2-002", "reason": "パーソルチャレンジとウェルビーは、企業の障害者雇用ニーズを就労移行で受ける形の連携が可能。サテライトオフィス型雇用の場合も、そこで働く障害者は就労移行の卒業生が多い" },
-        { "from": "L3A-003", "to": "L2-001", "reason": "クローバーナビに掲載された求人に応募する求職者の多くは就労移行支援の卒業生。LITALICOの事業所からナビ掲載求人への紹介実績が増えれば、双方にメリットがある" },
-        { "from": "L3A-004", "to": "L2-002", "reason": "障害者雇用バンクのマッチングプラットフォームに登録する求職者の多くは就労移行支援の利用経験者。ウェルビーとの連携で登録者の質・量を確保する" },
-        { "from": "L3A-004", "to": "L2-003", "reason": "障害者雇用バンクは急成長する人材紹介プラットフォームであり、ココルポートの拠点拡大エリアと求人エリアが重なれば相乗効果が期待できる" },
-        { "from": "L3A-005", "to": "L2-001", "reason": "WEBサーナの大手企業向け求人は、高い就職準備性が求められる。LITALICOのプログラムを修了した求職者はこれに合致しやすく、紹介の流れが自然にできる" },
-        { "from": "L3A-005", "to": "L2-002", "reason": "WEBサーナは企業と求職者をつなぐナビサイトであり、ウェルビーの卒業生にとっても有力な求人情報源。雇用率引き上げで両者の接点が増える" }
+        { "from": "L1-002", "to": "L2-005", "reason": "法定雇用率が2.7%に引き上げられると、従業員40人以上の企業約10万社に追加の障害者雇用義務が発生。未達成企業の納付金リスクが高まり、採用ニーズが急増する", "edgeType": "dependency" },
+        { "from": "L2-005", "to": "L3A-001", "reason": "企業は自社だけでは障害者採用が困難なため、専門の人材紹介（atGP）に求人を出す。ゼネラルパートナーズへの依頼が急増する", "edgeType": "dependency" },
+        { "from": "L2-005", "to": "L3A-002", "reason": "パーソルチャレンジ（dodaチャレンジ）は既存のdoda法人顧客から障害者採用ニーズを吸い上げ、サテライトオフィスや農園型雇用の提案も含めたソリューション営業を強化する", "edgeType": "dependency" },
+        { "from": "L2-005", "to": "L3A-003", "reason": "クローバーナビは掲載型の求人メディアであり、企業の求人出稿が増えるとPV・マッチング数が連動して伸びる", "edgeType": "dependency" },
+        { "from": "L2-005", "to": "L3A-004", "reason": "障害者雇用バンクのマッチングプラットフォームは、求人と求職者の双方が増えるとネットワーク効果で価値が高まる", "edgeType": "dependency" },
+        { "from": "L2-005", "to": "L3A-005", "reason": "WEBサーナは大手企業向けに強い。法定雇用率の引き上げで中堅企業も対象になるため、新規顧客層が広がる", "edgeType": "dependency" },
+        { "from": "L2-005", "to": "L2-001", "reason": "企業がLITALICOの就労移行支援事業所と直接連携し、人材紹介を介さずに障害者を採用する「ダイレクトリクルーティング」が増加。人材紹介の中抜き構造を脅かす", "edgeType": "direct" },
+        { "from": "L2-005", "to": "L2-002", "reason": "ウェルビーは高い移行実績を武器に、企業との直接契約（人材紹介手数料なし）を拡大。特に就労定着支援とセットでの提案が企業に好まれている", "edgeType": "direct" },
+        { "from": "L2-005", "to": "L2-003", "reason": "ココルポートも企業からの直接依頼を受け入れ始めており、成長中の拠点で直接採用のパイプラインを構築している", "edgeType": "direct" },
+        { "from": "L3A-001", "to": "L2-001", "reason": "atGPが企業から受ける求人を埋めるためには、就職準備ができた障害者が必要。LITALICOの就労移行支援は年間数千名の卒業生を輩出しており、最大の人材供給源。しかし同時にLITALICOの直接採用が増えればatGPの存在意義が問われる", "edgeType": "cooperation" },
+        { "from": "L3A-001", "to": "L2-002", "reason": "atGPとウェルビーは協力関係（人材供給）と競合関係（企業への直接提案）の二面性を持つ。ウェルビーの移行実績の高さがatGPの送り出し先としての価値を高める一方、ウェルビー自身の企業直接契約が増えている", "edgeType": "cooperation" },
+        { "from": "L3A-001", "to": "L2-003", "reason": "ココルポートは首都圏を中心に拠点を拡大中で、atGPの求人エリアと重なる。人材紹介の需要増がココルポートの新規拠点開設の後押しになる", "edgeType": "cooperation" },
+        { "from": "L3A-002", "to": "L2-001", "reason": "dodaチャレンジが大手企業から受ける求人は質・量ともにハイレベル。LITALICOの就労移行は訓練の質が高く、dodaチャレンジが企業に推薦できる人材を育てている", "edgeType": "cooperation" },
+        { "from": "L3A-002", "to": "L2-002", "reason": "パーソルチャレンジとウェルビーは、サテライトオフィス型雇用の場合も就労移行の卒業生が働くケースが多い。協力しつつも、ウェルビーの直接採用とは競合する", "edgeType": "cooperation" },
+        { "from": "L3A-003", "to": "L2-001", "reason": "クローバーナビに掲載された求人に応募する求職者の多くは就労移行支援の卒業生。LITALICOの事業所からの紹介実績が双方にメリットをもたらす", "edgeType": "cooperation" },
+        { "from": "L3A-004", "to": "L2-002", "reason": "障害者雇用バンクのマッチングプラットフォームに登録する求職者の多くは就労移行支援の利用経験者。ウェルビーとの連携で登録者の質・量を確保する", "edgeType": "cooperation" },
+        { "from": "L3A-004", "to": "L2-003", "reason": "障害者雇用バンクは急成長する人材紹介プラットフォームであり、ココルポートの拠点拡大エリアと求人エリアが重なれば相乗効果が期待できる", "edgeType": "cooperation" },
+        { "from": "L3A-005", "to": "L2-001", "reason": "WEBサーナの大手企業向け求人は、高い就職準備性が求められる。LITALICOのプログラムを修了した求職者はこれに合致しやすい", "edgeType": "cooperation" },
+        { "from": "L3A-005", "to": "L2-002", "reason": "WEBサーナは企業と求職者をつなぐナビサイトであり、ウェルビーの卒業生にとっても有力な求人情報源", "edgeType": "cooperation" }
       ]
     },
     {
       "id": "SC-003",
-      "title": "デジタル化・データ標準化の影響連鎖",
-      "description": "デジタル庁主導のデータ標準化が国保連を経由してSaaS企業に波及",
-      "overview": "デジタル庁が福祉分野のデータ標準化を進めると、まず国保連の電子請求システムのフォーマットが変わります。障害福祉の請求SaaSはすべて国保連にデータを送信するため、国保連のフォーマット変更は全SaaSの改修を強制します。「デジタル庁が方針を決める→国保連がフォーマットを変える→全SaaSが追従する→テック企業との連携にも波及する」という直列の連鎖です。",
+      "title": "デジタル化の影響連鎖（自治体ローカルルールの壁）",
+      "description": "デジタル庁の標準化方針が国保連と自治体の二重フィルターを経由してSaaSに波及する構造",
+      "overview": "デジタル庁が福祉分野のデータ標準化を進めると、まず国保連の電子請求フォーマットが変わります。しかしもう一つの障壁が自治体（指定権者）のローカルルールです。国が標準化しても、約1,700の指定権者がそれぞれ独自の指導監査基準を持っており、SaaSは「国保連の標準フォーマット」と「自治体ごとの独自ルール」の両方に対応する必要があります。この二重フィルター構造がSaaSの全国展開を阻む最大の障壁です。",
       "nodes": [
         {
           "entityId": "L1-005",
           "level": 0,
           "role": "制度設計（デジタル化方針）",
-          "children": ["L1-003"],
+          "children": ["L1-003", "L1-006"],
           "influenceType": "regulation",
           "influenceDescription": "データ標準化・API連携基盤の構築方針"
         },
         {
           "entityId": "L1-003",
           "level": 1,
-          "role": "請求審査機関（全SaaSの出口）",
+          "role": "請求審査機関（全SaaSの出口・ボトルネック）",
           "children": ["L3C-001", "L3C-006", "L3C-002", "L3C-003", "L3C-004"],
           "influenceType": "regulation",
-          "influenceDescription": "電子請求フォーマットの変更"
+          "influenceDescription": "電子請求フォーマットの変更（CSV→API/JSON移行の可能性）",
+          "bottleneck": true
+        },
+        {
+          "entityId": "L1-006",
+          "level": 1,
+          "role": "指定権者（ローカルルールの発生源）",
+          "children": ["L3C-001", "L3C-006", "L3C-002", "L3C-003", "L3C-004"],
+          "influenceType": "regulation",
+          "influenceDescription": "独自の指導監査基準（Override Rules）により国の標準化を上書き",
+          "overrideRules": "指導監査のローカルルール（記録の書式、計画書の様式、加算の算定基準など約1,700自治体で差異あり）"
         },
         {
           "entityId": "L3C-001",
@@ -227,7 +257,7 @@
           "role": "業務ソフト（独立系・元リクルート系）",
           "children": ["L5-001"],
           "influenceType": "competition",
-          "influenceDescription": "API対応・データ連携の開発"
+          "influenceDescription": "国保連API対応 + 自治体別カスタマイズの二重開発コスト"
         },
         {
           "entityId": "L3C-006",
@@ -235,7 +265,7 @@
           "role": "業務ソフト（LITALICO子会社）",
           "children": [],
           "influenceType": "competition",
-          "influenceDescription": "親会社の事業所ネットワークを活かした迅速対応"
+          "influenceDescription": "350拠点が全国に分散しており自治体ローカルルールの影響を最も受ける"
         },
         {
           "entityId": "L3C-002",
@@ -243,7 +273,7 @@
           "role": "業務ソフト（放デイ特化）",
           "children": [],
           "influenceType": "competition",
-          "influenceDescription": "標準フォーマット対応（対応コストが経営を圧迫）"
+          "influenceDescription": "標準フォーマット対応 + 自治体別様式対応のコスト負担"
         },
         {
           "entityId": "L3C-003",
@@ -251,7 +281,7 @@
           "role": "業務ソフト（介護・障害横断）",
           "children": [],
           "influenceType": "competition",
-          "influenceDescription": "介護・障害の両分野で横断的なデータ対応が必要"
+          "influenceDescription": "介護・障害の両分野で横断的なデータ対応 + 自治体別差異が二重に発生"
         },
         {
           "entityId": "L3C-004",
@@ -259,7 +289,7 @@
           "role": "業務ソフト（レガシー系）",
           "children": [],
           "influenceType": "competition",
-          "influenceDescription": "レガシーシステムの刷新圧力"
+          "influenceDescription": "レガシーシステムでは自治体別カスタマイズの柔軟性が低く、淘汰リスク"
         },
         {
           "entityId": "L5-001",
@@ -271,60 +301,87 @@
         }
       ],
       "connectionReasons": [
-        { "from": "L1-005", "to": "L1-003", "reason": "デジタル庁がデータ標準化方針を決めると、国保連は電子請求受付システムをその標準に合わせて改修する必要がある。CSV形式からAPI/JSON形式への移行が想定される" },
-        { "from": "L1-003", "to": "L3C-001", "reason": "国保連の請求フォーマットが変わると、knowbeの請求エンジンは全面改修が必要。国保連は全SaaSの「出口」であるため、ここの変更は避けられない" },
-        { "from": "L1-003", "to": "L3C-006", "reason": "かんたん請求ソフトもフォーマット変更への対応が必須。ただしLITALICO自身が350超の事業所を持つため、自社利用で先行的にテスト・改修できる強みがある" },
-        { "from": "L1-003", "to": "L3C-002", "reason": "HUGは放デイに特化しているが、データ標準化はサービス種別を問わず適用される。対応コストが小規模SaaSの経営を圧迫する可能性がある" },
-        { "from": "L1-003", "to": "L3C-003", "reason": "ほのぼのmoreは介護の国保連請求と障害の国保連請求の両方に対応しており、フォーマット変更の影響を二重に受ける" },
-        { "from": "L1-003", "to": "L3C-004", "reason": "介舟ファミリーはレガシーなアーキテクチャで動いており、新しいAPI形式への対応はシステム全体の作り直しに近い。対応が遅れれば顧客流出のリスクがある" },
-        { "from": "L3C-001", "to": "L5-001", "reason": "knowbeがAPI対応を進めると、LayerXのバクラク等の会計SaaSとのデータ連携が可能になる。請求データと経理データの自動連携は両社にとってビジネスチャンス" }
+        { "from": "L1-005", "to": "L1-003", "reason": "デジタル庁がデータ標準化方針を決めると、国保連は電子請求受付システムをその標準に合わせて改修する必要がある。CSV形式からAPI/JSON形式への移行が想定される", "edgeType": "bottleneck" },
+        { "from": "L1-005", "to": "L1-006", "reason": "デジタル庁の標準化方針は自治体にも適用されるが、約1,700の指定権者がそれぞれ独自の運用ルールを持っており、標準化の浸透には数年単位のタイムラグがある。国の方針と現場のルールが乖離する構造的問題", "edgeType": "dependency" },
+        { "from": "L1-003", "to": "L3C-001", "reason": "国保連の請求フォーマットが変わると、knowbeの請求エンジンは全面改修が必要。国保連は全SaaSの「出口」であるため、ここの変更は避けられない", "edgeType": "bottleneck" },
+        { "from": "L1-003", "to": "L3C-006", "reason": "かんたん請求ソフトもフォーマット変更への対応が必須。ただしLITALICO自身が350超の事業所を持つため、自社利用で先行的にテスト・改修できる", "edgeType": "bottleneck" },
+        { "from": "L1-003", "to": "L3C-002", "reason": "HUGは放デイに特化しているが、データ標準化はサービス種別を問わず適用される", "edgeType": "bottleneck" },
+        { "from": "L1-003", "to": "L3C-003", "reason": "ほのぼのmoreは介護と障害の両方で国保連請求に対応しており、フォーマット変更の影響を二重に受ける", "edgeType": "bottleneck" },
+        { "from": "L1-003", "to": "L3C-004", "reason": "介舟ファミリーはレガシーなアーキテクチャで動いており、新しいAPI形式への対応はシステム全体の作り直しに近い", "edgeType": "bottleneck" },
+        { "from": "L1-006", "to": "L3C-001", "reason": "knowbeは全国展開しているため、各自治体の指導監査基準の差異に対応する必要がある。A市では認められる記録様式がB市では不可、といったローカルルールがカスタマイズコストを押し上げる", "edgeType": "dependency" },
+        { "from": "L1-006", "to": "L3C-006", "reason": "LITALICOは47都道府県に事業所を持つため、自治体ローカルルールの影響を最も広範に受ける。自社SaaSはこの対応を内製できるが、開発リソースの分散を招く", "edgeType": "dependency" },
+        { "from": "L1-006", "to": "L3C-002", "reason": "放デイは自治体の裁量が特に大きい領域（例：人員配置基準の解釈差異）。HUGは自治体別の様式テンプレートを個別対応する必要がある", "edgeType": "dependency" },
+        { "from": "L1-006", "to": "L3C-003", "reason": "ほのぼのmoreは介護分野の全国実績があるが、障害福祉は自治体ごとの独自ルールが介護以上に多く、対応工数が想定を超える", "edgeType": "dependency" },
+        { "from": "L1-006", "to": "L3C-004", "reason": "レガシーシステムではパラメータ設定による自治体別カスタマイズが難しく、個別改修が必要。この柔軟性の欠如が顧客流出の主因になり得る", "edgeType": "dependency" },
+        { "from": "L3C-001", "to": "L5-001", "reason": "knowbeがAPI対応を進めると、LayerXのバクラク等の会計SaaSとのデータ連携が可能になる。請求データと経理データの自動連携は両社にとってビジネスチャンス", "edgeType": "cooperation" }
       ]
     },
     {
       "id": "SC-004",
-      "title": "AI技術の影響連鎖",
-      "description": "生成AI技術の進化がSaaS→事業所→メディアへ順に波及",
-      "overview": "OpenAI・Anthropic等の生成AI技術は、まずSaaS各社に搭載されます。AI記録アシスタントや帳票自動生成がSaaSに組み込まれると、事業所はAI搭載SaaSを選び始めます。大手事業所（LITALICO等）は独自にAIを内製し始め、その内製AI体験が自社メディアにも波及します。「AI基盤技術が進化する→SaaSがAI機能を搭載する→事業所のSaaS選定基準が変わる→大手が内製化する→メディアもAI高度化する」という段階的な連鎖です。",
+      "title": "AI技術の影響連鎖（事務 vs 教育の二系統分岐）",
+      "description": "生成AI技術がBack-office Ops（請求・記録）とService Quality（療育・研修）の2系統に分岐して波及",
+      "overview": "生成AI技術の進化は、障害福祉業界に2つの異なる経路で影響を与えます。一つは「Back-office Ops（事務効率化）」系統で、請求処理・記録・帳票の自動化です。もう一つは「Service Quality（サービス品質向上）」系統で、療育プログラムのパーソナライズ・スタッフ研修のAI化・アセスメントの高度化です。前者はSaaSが担い、後者は研修・教育プラットフォームが担います。この分岐を理解することが、AI投資の戦略的配分の鍵になります。",
       "nodes": [
         {
           "entityId": "L5-006",
           "level": 0,
           "role": "AI基盤技術",
-          "children": ["L3C-001", "L3C-006", "L3C-002"],
+          "children": ["L3C-001", "L3C-006", "L3C-002", "L4-001", "L4-002"],
           "influenceType": "technology",
           "influenceDescription": "生成AI・LLM技術の急速な進化と低コスト化"
         },
         {
           "entityId": "L3C-001",
           "level": 1,
-          "role": "業務ソフト（独立系・AI搭載競争）",
+          "role": "Back-office Ops（独立系SaaS）",
           "children": ["L2-002", "L2-003"],
           "influenceType": "competition",
-          "influenceDescription": "AI記録アシスタント・帳票自動生成を搭載"
+          "influenceDescription": "AI記録アシスタント・帳票自動生成・請求チェックAI",
+          "subType": "back-office"
         },
         {
           "entityId": "L3C-006",
           "level": 1,
-          "role": "業務ソフト（LITALICO子会社・AI搭載競争）",
+          "role": "Back-office Ops（LITALICO子会社SaaS）",
           "children": ["L2-001"],
           "influenceType": "competition",
-          "influenceDescription": "親会社LITALICOのAI投資と連動した機能強化"
+          "influenceDescription": "親会社LITALICOのAI投資と連動した請求・記録の自動化",
+          "subType": "back-office"
         },
         {
           "entityId": "L3C-002",
           "level": 1,
-          "role": "業務ソフト（放デイ特化・AI搭載競争）",
+          "role": "Back-office Ops（放デイ特化SaaS）",
           "children": [],
           "influenceType": "competition",
-          "influenceDescription": "保護者向け連絡帳自動生成・アセスメント支援AI"
+          "influenceDescription": "保護者向け連絡帳自動生成・活動記録のAI要約",
+          "subType": "back-office"
+        },
+        {
+          "entityId": "L4-001",
+          "level": 1,
+          "role": "Service Quality（AI/VR研修）",
+          "children": ["L2-001", "L2-002", "L2-003"],
+          "influenceType": "technology",
+          "influenceDescription": "AI/VR研修コンテンツの拡充（福祉人材育成の変革）",
+          "subType": "service-quality"
+        },
+        {
+          "entityId": "L4-002",
+          "level": 1,
+          "role": "Service Quality（e-ラーニング）",
+          "children": ["L2-001", "L2-002"],
+          "influenceType": "technology",
+          "influenceDescription": "障害特性別のパーソナライズ研修・アセスメントAI",
+          "subType": "service-quality"
         },
         {
           "entityId": "L2-001",
           "level": 2,
-          "role": "事業所運営（AI内製化）",
-          "children": ["L3B-001", "L4-001"],
+          "role": "事業所運営（AI内製化・両系統統合）",
+          "children": ["L3B-001"],
           "influenceType": "market",
-          "influenceDescription": "350拠点のデータを活用してAIを内製化。外部SaaS依存度が低下"
+          "influenceDescription": "350拠点のデータを活用してBack-office + Service Qualityの両面でAI内製化"
         },
         {
           "entityId": "L2-002",
@@ -332,7 +389,7 @@
           "role": "事業所運営（AI搭載SaaS導入）",
           "children": [],
           "influenceType": "market",
-          "influenceDescription": "AI搭載SaaSの導入でスタッフの記録負担を軽減"
+          "influenceDescription": "Back-office AI（記録負担軽減）とService Quality AI（研修効率化）を外部SaaSから導入"
         },
         {
           "entityId": "L2-003",
@@ -340,7 +397,7 @@
           "role": "事業所運営（AI搭載SaaS導入）",
           "children": [],
           "influenceType": "market",
-          "influenceDescription": "成長拠点にAI SaaSを標準導入し効率化"
+          "influenceDescription": "成長拠点にBack-office AI SaaSを標準導入し少人数運営を実現"
         },
         {
           "entityId": "L3B-001",
@@ -349,25 +406,23 @@
           "children": [],
           "influenceType": "competition",
           "influenceDescription": "LITALICOのAIマッチングにより仕事ナビの検索体験が高度化"
-        },
-        {
-          "entityId": "L4-001",
-          "level": 3,
-          "role": "隣接サービス（AI研修）",
-          "children": [],
-          "influenceType": "technology",
-          "influenceDescription": "AI/VR研修コンテンツの拡充（福祉人材育成の変革）"
         }
       ],
       "connectionReasons": [
-        { "from": "L5-006", "to": "L3C-001", "reason": "生成AI技術の低コスト化により、knowbeはAI記録アシスタント・帳票自動生成機能を搭載できるようになる。「AI搭載SaaS」と「従来型SaaS」の差別化が決定的になる" },
-        { "from": "L5-006", "to": "L3C-006", "reason": "かんたん請求ソフトは親会社LITALICOのAI投資と連動して機能強化が可能。LITALICOのAI研究チームとの連携で他社より早くAI機能を搭載できる優位性がある" },
-        { "from": "L5-006", "to": "L3C-002", "reason": "HUGが放デイ向けにAI機能を追加すると、保護者向けの連絡帳自動生成やアセスメント支援が可能に。小規模事業所にとってAIは人手不足解消の切り札" },
-        { "from": "L3C-001", "to": "L2-002", "reason": "knowbeがAI機能を搭載すると、ウェルビーは導入メリットが高まる。支援員の記録負担が減り、本来の支援業務に時間を割けるようになる" },
-        { "from": "L3C-001", "to": "L2-003", "reason": "ココルポートの新規拠点でAI搭載knowbeを標準導入すれば、少人数でも効率的な事業所運営が可能になる" },
-        { "from": "L3C-006", "to": "L2-001", "reason": "かんたん請求ソフトのAI機能はLITALICO自身の350事業所で先行利用される。そこで得られたフィードバックが更なるAI改善に繋がるサイクルが生まれる" },
-        { "from": "L2-001", "to": "L3B-001", "reason": "LITALICOがAIマッチングを内製化すると、自社メディア「仕事ナビ」の検索・レコメンド体験が高度化。他の求人メディアもAI対応を迫られる" },
-        { "from": "L2-001", "to": "L4-001", "reason": "LITALICOのAI活用ノウハウが福祉人材育成にも波及。Lean on MeのVR・AI研修コンテンツとの連携で「AIとシミュレーション研修」が実現する可能性がある" }
+        { "from": "L5-006", "to": "L3C-001", "reason": "【Back-office系統】生成AI技術の低コスト化により、knowbeはAI記録アシスタント・帳票自動生成・請求チェック機能を搭載。事務作業の自動化で「AI搭載SaaS」と「従来型SaaS」の差別化が決定的に", "edgeType": "dependency" },
+        { "from": "L5-006", "to": "L3C-006", "reason": "【Back-office系統】かんたん請求ソフトは親会社LITALICOのAI投資と連動し、請求チェック・記録要約の自動化を他社より早く搭載できる優位性がある", "edgeType": "dependency" },
+        { "from": "L5-006", "to": "L3C-002", "reason": "【Back-office系統】HUGが放デイ向けにAI連絡帳自動生成やアセスメント支援を追加。小規模事業所の人手不足解消の切り札", "edgeType": "dependency" },
+        { "from": "L5-006", "to": "L4-001", "reason": "【Service Quality系統】Lean on MeのAI/VR研修は、支援員のスキル向上と療育品質の標準化に寄与。生成AIで研修コンテンツのパーソナライズが可能に", "edgeType": "dependency" },
+        { "from": "L5-006", "to": "L4-002", "reason": "【Service Quality系統】Special Learningの障害特性別e-ラーニングにAIが組み込まれると、利用者のアセスメント結果に基づくパーソナライズ研修が実現", "edgeType": "dependency" },
+        { "from": "L3C-001", "to": "L2-002", "reason": "knowbeのBack-office AI機能により、ウェルビーの支援員が記録業務から解放され、本来の支援業務に集中できるようになる", "edgeType": "dependency" },
+        { "from": "L3C-001", "to": "L2-003", "reason": "ココルポートの新規拠点でAI搭載knowbeを標準導入すれば、少人数でも効率的な事業所運営が可能になる", "edgeType": "dependency" },
+        { "from": "L3C-006", "to": "L2-001", "reason": "かんたん請求ソフトのBack-office AI機能はLITALICO自身の350事業所で先行利用。フィードバックが更なるAI改善サイクルを生む", "edgeType": "dependency" },
+        { "from": "L4-001", "to": "L2-001", "reason": "Lean on MeのService Quality AI研修をLITALICOが導入すると、全国の事業所で支援品質が標準化される。AIシミュレーション研修で新人育成が加速", "edgeType": "cooperation" },
+        { "from": "L4-001", "to": "L2-002", "reason": "ウェルビーがAI/VR研修を導入すると、就労移行支援の訓練プログラム自体がAI化される可能性がある", "edgeType": "cooperation" },
+        { "from": "L4-001", "to": "L2-003", "reason": "ココルポートは成長中で新人スタッフの育成が課題。AI研修の導入で育成コストを抑えながら拠点拡大が可能に", "edgeType": "cooperation" },
+        { "from": "L4-002", "to": "L2-001", "reason": "Special LearningのService Quality AI研修をLITALICOが活用すると、利用者一人ひとりの障害特性に合わせたパーソナライズ支援が実現する", "edgeType": "cooperation" },
+        { "from": "L4-002", "to": "L2-002", "reason": "ウェルビーの就労移行支援にAIアセスメントが組み込まれると、利用者の適性判断や就職先マッチングの精度が向上する", "edgeType": "cooperation" },
+        { "from": "L2-001", "to": "L3B-001", "reason": "LITALICOがBack-office + Service Qualityの両面でAIを内製化すると、そのノウハウが自社メディア「仕事ナビ」のAIマッチングにも波及する", "edgeType": "dependency" }
       ]
     }
   ]

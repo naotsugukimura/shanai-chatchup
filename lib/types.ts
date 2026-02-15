@@ -97,12 +97,27 @@ export interface SupplyChainNode {
   children: string[];
   influenceType: "regulation" | "market" | "technology" | "competition";
   influenceDescription: string;
+  /** ボトルネックノード（国保連など、全体の遅延要因） */
+  bottleneck?: boolean;
+  /** ローカルルール等のオーバーライド属性 */
+  overrideRules?: string;
+  /** ノードのサブタイプ（back-office / service-quality など） */
+  subType?: string;
 }
+
+export type EdgeType =
+  | "dependency"       // 上流→下流の依存（デフォルト）
+  | "cooperation"      // 協力関係（双方向）
+  | "competition"      // 競合関係（双方向）
+  | "direct"           // 直接関係（中間者をバイパス）
+  | "bottleneck";      // ボトルネック経由
 
 export interface ConnectionReason {
   from: string;
   to: string;
   reason: string;
+  /** エッジの関係性タイプ（省略時は dependency） */
+  edgeType?: EdgeType;
 }
 
 export interface SupplyChain {
