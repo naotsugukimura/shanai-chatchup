@@ -124,30 +124,32 @@ export async function getLastCrawled(): Promise<string | null> {
 }
 
 /**
- * 初回セットアップ: data/news.json の18件をKVに投入
+ * サンプルデータを削除（example.comやisManual=trueのデータを除去）
  */
-export async function seedFromJson(): Promise<number> {
+export async function removeSampleData(): Promise<number> {
   if (!redis) return 0
 
-  const existing = await redis.get<NewsItem[]>(NEWS_KEY)
-  if (existing && existing.length > 0) {
-    return existing.length // 既にデータあり
+  const existing = (await redis.get<NewsItem[]>(NEWS_KEY)) ?? []
+  const sampleUrls: string[] = []
+
+  const cleaned = existing.filter((item) => {
+    const isSample =
+      item.url.includes("example.com") ||
+      (item as unknown as Record<string, unknown>).isManual === true ||
+      (item.id >= "N-001" && item.id <= "N-018")
+    if (isSample) sampleUrls.push(item.url)
+    return !isSample
+  })
+
+  const removed = existing.length - cleaned.length
+  if (removed === 0) return 0
+
+  await redis.set(NEWS_KEY, cleaned)
+
+  // URLセットからも削除
+  for (const url of sampleUrls) {
+    await redis.srem(URLS_KEY, url)
   }
 
-  const seedData = (fallbackNewsData as unknown as NewsItem[]).map((item) => ({
-    ...item,
-    isManual: true,
-  }))
-
-  await redis.set(NEWS_KEY, seedData)
-
-  // URLをセットに追加
-  for (const item of seedData) {
-    await redis.sadd(URLS_KEY, item.url)
-  }
-
-  // カウンターを18に設定
-  await redis.set(COUNTER_KEY, seedData.length)
-
-  return seedData.length
+  return removed
 }

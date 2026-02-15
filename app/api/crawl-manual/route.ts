@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
 import { runDailyCrawl } from "@/lib/crawl-news"
-import { seedFromJson } from "@/lib/news-store"
 
 // 手動クローリング実行用エンドポイント（UIからのトリガー用）
 export const maxDuration = 300
 
 export async function POST() {
   try {
-    // まずKVにシードデータを投入（初回のみ）
-    await seedFromJson()
 
     // クローリング実行（手動クロールはスケジュール無視で全クエリ実行）
     console.log("[Manual] ニュースクローリング開始（全クエリ実行）...")

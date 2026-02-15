@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/crawl-news",
-      "schedule": "0 21 * * 1-6"
+      "schedule": "0 21 * * *"
     }
   ]
 }

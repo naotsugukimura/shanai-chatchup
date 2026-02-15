@@ -3,7 +3,6 @@
 import { useState, useMemo, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { SearchBar } from "./SearchBar"
 import type { NewsItem, Entity } from "@/lib/types"
 import { NEWS_CATEGORIES } from "@/lib/constants"
@@ -161,28 +160,6 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
         </div>
       </div>
 
-      {/* Manual Crawl Button */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <Button
-          onClick={handleManualCrawl}
-          disabled={isCrawling}
-          className="bg-[#1a2744] hover:bg-[#2a3754] text-white"
-          size="sm"
-        >
-          {isCrawling ? (
-            <span className="flex items-center gap-2">
-              <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              クロール中...
-            </span>
-          ) : (
-            "🔄 今すぐニュースを取得"
-          )}
-        </Button>
-        {crawlResult && (
-          <p className="text-xs">{crawlResult}</p>
-        )}
-      </div>
-
       {/* Search + Category Filter */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="max-w-md flex-1">
@@ -296,6 +273,20 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
           <p className="text-sm">検索条件を変更してください</p>
         </div>
       )}
+
+      {/* Manual crawl - small link at bottom */}
+      <div className="pt-8 text-center">
+        <button
+          onClick={handleManualCrawl}
+          disabled={isCrawling}
+          className="text-[10px] text-muted-foreground/50 hover:text-muted-foreground transition-colors disabled:opacity-50"
+        >
+          {isCrawling ? "取得中..." : "手動取得"}
+        </button>
+        {crawlResult && (
+          <p className="text-[10px] text-muted-foreground mt-1">{crawlResult}</p>
+        )}
+      </div>
     </div>
   )
 }
