@@ -9,6 +9,19 @@ import type { NewsItem, Entity } from "@/lib/types"
 import { NEWS_CATEGORIES } from "@/lib/constants"
 import { createIdMap } from "@/lib/utils"
 
+/**
+ * タイトルがURLやドメイン名のようなものかどうか判定
+ */
+function isUrlLikeTitle(title: string): boolean {
+  const t = title.trim()
+  if (t.startsWith("http://") || t.startsWith("https://")) return true
+  // ドメイン名っぽい（例: knowbe.jp, prtimes.jp）
+  if (/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(t)) return true
+  // URLっぽいパスを含む
+  if (/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\//.test(t)) return true
+  return false
+}
+
 interface NewsTimelineProps {
   news: NewsItem[]
   entities: Entity[]
@@ -241,12 +254,14 @@ export function NewsTimeline({ news, entities, lastCrawled }: NewsTimelineProps)
                       onClick={() => setSelectedItem(item)}
                       className="font-bold text-sm hover:text-blue-600 hover:underline block mb-1.5 text-left cursor-pointer"
                     >
-                      {item.title}
+                      {isUrlLikeTitle(item.title) ? item.summary : item.title}
                     </button>
 
-                    <p className="text-xs text-muted-foreground mb-2">
-                      {item.summary}
-                    </p>
+                    {!isUrlLikeTitle(item.title) && (
+                      <p className="text-xs text-muted-foreground mb-2">
+                        {item.summary}
+                      </p>
+                    )}
 
                     {item.urlVerified === false && !item.isManual && (
                       <span className="text-[9px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">

@@ -14,6 +14,14 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import type { NewsItem, Entity } from "@/lib/types"
 import { NEWS_CATEGORIES } from "@/lib/constants"
 
+function isUrlLikeTitle(title: string): boolean {
+  const t = title.trim()
+  if (t.startsWith("http://") || t.startsWith("https://")) return true
+  if (/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(t)) return true
+  if (/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\//.test(t)) return true
+  return false
+}
+
 interface NewsDetailSheetProps {
   selectedItem: NewsItem | null
   entityMap: Record<string, Entity>
@@ -175,7 +183,7 @@ export function NewsDetailSheet({ selectedItem, entityMap, onClose }: NewsDetail
             </span>
           </div>
           <SheetTitle className="text-sm leading-snug pr-6">
-            {selectedItem.title}
+            {isUrlLikeTitle(selectedItem.title) ? selectedItem.summary : selectedItem.title}
           </SheetTitle>
           <SheetDescription className="sr-only">ニュース詳細と分析</SheetDescription>
         </SheetHeader>
