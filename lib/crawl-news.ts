@@ -170,7 +170,32 @@ async function searchForGroundingUrls(
 }
 
 /**
+ * URLからページの本文テキストを簡易取得（先頭2000文字）
+ */
+async function fetchPageSnippet(url: string): Promise<string> {
+  try {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; NewsBot/1.0)" },
+      signal: AbortSignal.timeout(5000),
+    })
+    if (!res.ok) return ""
+    const html = await res.text()
+    // HTMLタグを除去してテキスト抽出
+    const text = html
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+    return text.slice(0, 2000)
+  } catch {
+    return ""
+  }
+}
+
+/**
  * Step 2: 収集したグラウンディングURLをAIに分類・要約させる
+ * 各URLの実際のページ内容を取得してプロンプトに含める
  */
 async function analyzeArticles(
   ai: InstanceType<typeof GoogleGenAI>,
@@ -179,34 +204,59 @@ async function analyzeArticles(
 ): Promise<Omit<NewsItem, "id">[]> {
   if (articles.length === 0) return []
 
-  const articlesList = articles
-    .map((a, i) => `${i + 1}. URL: ${a.uri}\n   タイトル: ${a.title}`)
-    .join("\n")
+  // 各記事のページ本文を並列取得（5並列）
+  const snippets: string[] = new Array(articles.length).fill("")
+  for (let i = 0; i < articles.length; i += 5) {
+    const batch = articles.slice(i, i + 5)
+    const results = await Promise.allSettled(
+      batch.map((a) => fetchPageSnippet(a.uri))
+    )
+    for (let j = 0; j < results.length; j++) {
+      if (results[j].status === "fulfilled") {
+        snippets[i + j] = (results[j] as PromiseFulfilledResult<string>).value
+      }
+    }
+  }
 
-  const analyzePrompt = `あなたは障害福祉業界のニュース分析AIです。
-以下の記事リストを分析し、障害福祉・障害者雇用・就労支援に関連するものだけをJSON配列で返してください。
+  const articlesList = articles
+    .map((a, i) => {
+      const snippet = snippets[i]
+      return `${i + 1}. URL: ${a.uri}\n   タイトル: ${a.title}${snippet ? `\n   本文抜粋: ${snippet.slice(0, 500)}` : ""}`
+    })
+    .join("\n\n")
+
+  const analyzePrompt = `あなたは障害福祉業界の専門ニュース分析AIです。
+以下の記事リスト（URL・タイトル・本文抜粋）を分析し、**障害福祉・障害者雇用・就労支援に本当に関連する記事だけ**をJSON配列で返してください。
 
 ## 記事リスト
 ${articlesList}
 
-## ルール
-- 障害福祉・障害者雇用・就労支援に無関係な記事は除外してください
-- ★最重要★ urlの値は上記リストのURLをそのまま使ってください。URLを変更・生成しないでください。
-- ★重要★ titleは「どの企業/団体が何をしたのか」が一目でわかる日本語タイトルにしてください。URLやドメイン名をタイトルにしないでください。「某社」「ある企業」のような曖昧な表現は禁止です。企業名が不明な場合はURLのドメイン名やタイトルから推測してください。例:「LITALICO、就労支援向け新SaaSツールを発表」「厚労省、障害者法定雇用率を2.7%に引き上げへ」
+## フィルタリング基準（厳格に適用してください）
+★最重要★ 以下に該当する記事は必ず除外してください：
+- 本文抜粋を読んで障害福祉・障害者雇用・就労支援について具体的に触れていない記事
+- 一般的な人材・転職ニュースで障害者雇用に特化していないもの
+- 一般的な介護ニュースで障害福祉に触れていないもの
+- 個人ブログ・noteの個人的な感想や日記
+- 企業のトップページや事業紹介ページ（ニュース記事ではないもの）
+- 求人情報ページや事業所一覧ページ
+- 内容が不明確で判断できないもの（「可能性がある」で推測しない）
+
+★重要★ 迷ったら除外してください。質の高いニュース記事だけを残します。
+
+## 出力ルール
+- urlの値は上記リストのURLをそのまま使ってください。URLを変更・生成しないでください。
+- titleは「どの企業/団体が何をしたのか」が一目でわかる日本語タイトルにしてください。「某社」「ある企業」のような曖昧な表現は禁止。例:「LITALICO、就労支援向け新SaaSツールを発表」
 - categoryは必ず以下の6つのいずれか: product, partnership, funding, policy, market, technology
-- impactは自社事業（SaaS・人材紹介・メディア事業を運営する障害福祉サービス企業）への影響度。必ず以下の3つのいずれか: high, medium, low
-  - high: 直接的な競合の動き、法改正、報酬改定など事業に大きく影響する
-  - medium: 業界トレンド、間接的な影響がある動向
-  - low: 参考情報レベル、すぐの影響は小さい
-- summaryは100文字以内の日本語で記事内容を要約
-- relatedEntityIdsは以下のエンティティリストから該当するものを選択（該当なしなら空配列）
-- dateは記事の公開日をYYYY-MM-DD形式（不明なら今日の日付: ${new Date().toISOString().slice(0, 10)}）
-- sourceはサイト名（URLのドメインから推定）
+- impactは自社事業（SaaS・人材紹介・メディア事業を運営する障害福祉サービス企業）への影響度: high, medium, low
+- summaryは本文抜粋の内容に基づいた100文字以内の日本語要約（推測ではなく実際の内容を要約）
+- relatedEntityIdsは以下のエンティティリストから該当するものを選択
+- dateは記事の公開日（YYYY-MM-DD、不明なら${new Date().toISOString().slice(0, 10)}）
+- sourceはサイト名
 
 ## エンティティリスト
 ${entityList}
 
-## 出力形式（JSON配列のみ返してください、他のテキストは不要）
+## 出力形式（JSON配列のみ、他のテキスト不要）
 関連記事がない場合は空配列 [] を返してください。
 [
   {
